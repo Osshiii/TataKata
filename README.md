@@ -1,7 +1,7 @@
 # TataKata: Big Project Kelompok 6 PBKK C 2025
 
 ### Anggota Kelompok 6
-|    NRP     |      Name      |
+|    NRP     |      Nama      |
 | :--------: | :------------: |
 | 5025231041 | Amelia Nova Safitri |
 | 5025231043 | Tarisha Falah Basuki |
