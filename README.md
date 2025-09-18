@@ -1,8 +1,7 @@
 # TataKata
 Big Project Kelompok 6 PBKK C 2025
 
-|    Anggota Kelompok 6      |
-| :--------------------------: |
+## Anggota Kelompok
 |    NRP     |      Name      |
 | :--------: | :------------: |
 | 5025231041 | Amelia Nova Safitri |
