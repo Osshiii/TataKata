@@ -13,11 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // User seeder contoh bawaan
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Tambahkan seeder KBBI di sini
+        $this->call(\Database\Seeders\KbbiDictionarySeeder::class, 
+                    \Database\Seeders\PuebiEntriesSeeder::class,
+                     \Database\Seeders\KbbiEntriesSeeder::class);
     }
 }
