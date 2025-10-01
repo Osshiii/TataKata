@@ -30,6 +30,7 @@ services:
     ports:
       - "${DB_EXTERNAL_PORT}:3306"
     volumes:
+      - ./laravel+db/public:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
 
   fastapi:
