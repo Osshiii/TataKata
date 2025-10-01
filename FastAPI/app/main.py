@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File
 from app.checker import check_rules
 from app.ai_dummy import ai_check
+from app.ai_service import ai_predict, load_model
+from pydantic import BaseModel
 
 app = FastAPI(
     title="TataKata Backend",
@@ -8,12 +10,20 @@ app = FastAPI(
     version="0.1.0"
 )
 
+class TextRequest(BaseModel):
+    text: str
+
+@app.on_event("startup")
+def startup_event():
+    load_model()
+
 @app.get("/")
 def read_root():
     return {"message": "TataKata API is running 🚀"}
 
 @app.post("/api/check-hybrid")
-def check_hybrid(text: str):
+def check_hybrid(req: TextRequest):
+    text = req.text
     rule_errors = check_rules(text)
     ai_suggestions = ai_check(text)
     return {
@@ -31,3 +41,8 @@ async def upload_pdf(file: UploadFile = File(...)):
         "filename": file.filename,
         "message": "PDF berhasil diunggah dan disimpan."
     }
+
+@app.post("/api/predict-ai")
+def predict_ai(req: TextRequest):
+    result = ai_predict(req.text)
+    return {"ai_suggestions": result}
