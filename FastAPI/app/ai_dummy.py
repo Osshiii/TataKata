@@ -1,4 +1,7 @@
 # app/ai_dummy.py
 
 def ai_check(text: str):
-    return ["(AI dummy) Saran AI: Kalimat ini bisa lebih ringkas."]
+    if len(text.split()) > 20:
+        return ["(AI dummy) Kalimat ini terlalu panjang, sebaiknya dipecah agar lebih ringkas."]
+    else:
+        return ["(AI dummy) Kalimat sudah cukup efektif."]
