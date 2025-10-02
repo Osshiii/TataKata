@@ -21,9 +21,20 @@ def startup_event():
 def read_root():
     return {"message": "TataKata API is running 🚀"}
 
+# pakai pydantic 
+# @app.post("/api/check-hybrid")
+# def check_hybrid(req: TextRequest):
+#     text = req.text
+#     rule_errors = check_rules(text)
+#     ai_suggestions = ai_check(text)
+#     return {
+#         "text": text,
+#         "rule_based_errors": rule_errors,
+#         "ai_suggestions": ai_suggestions
+#     }
+
 @app.post("/api/check-hybrid")
-def check_hybrid(req: TextRequest):
-    text = req.text
+def check_hybrid(text: str):
     rule_errors = check_rules(text)
     ai_suggestions = ai_check(text)
     return {
