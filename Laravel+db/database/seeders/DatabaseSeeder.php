@@ -15,8 +15,9 @@ class DatabaseSeeder extends Seeder
     {
         // User seeder contoh bawaan
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'first_name' => 'Test',
+            'last_name'  => 'User',
+            'email' => 'test@example.com'
         ]);
 
         // Tambahkan seeder KBBI di sini

@@ -42,6 +42,12 @@
                 </div>
 
                 <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
+                    <input id="password" type="password" name="password" required 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300">
+                </div>
+
+                <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
                     <input id="password_confirmation" type="password" name="password_confirmation" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300">
