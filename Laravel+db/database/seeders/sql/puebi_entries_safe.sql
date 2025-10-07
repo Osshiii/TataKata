@@ -1,17 +1,3 @@
-CREATE DATABASE IF NOT EXISTS puebi
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE puebi;
-
-CREATE TABLE IF NOT EXISTS puebi_entries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    slug VARCHAR(255),
-    title TEXT,
-    path TEXT,
-    content_markdown LONGTEXT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 INSERT INTO puebi_entries (slug, title, path, content_markdown) VALUES ('index', 'Pedoman Umum Ejaan Bahasa Indonesia (PUEBI)', 'index.md', '# Pedoman Umum Ejaan Bahasa Indonesia (PUEBI)
 
 PUEBI Daring adalah versi web ramah gawai dari *Pedoman Umum Ejaan Bahasa Indonesia* (PUEBI) Permendikbud 50/2015. Isi [PUEBI Daring](http://ivanlanin.github.io/puebi) diperkaya dengan beberapa catatan tambahan yang belum dinyatakan atau dinyatakan secara implisit pada dokumen asli [Permendikbud 50/2015](https://upload.wikimedia.org/wikipedia/commons/3/33/Peraturan_Menteri_Pendidikan_dan_Kebudayaan_Nomor_50_Tahun_2015_tentang_Pedoman_Umum_Ejaan_Bahasa_Indonesia.pdf).

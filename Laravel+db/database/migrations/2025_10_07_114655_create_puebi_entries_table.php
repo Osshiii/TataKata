@@ -6,23 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('puebi_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('rule_title');       // nama kaidah
-            $table->text('description')->nullable(); // penjelasan kaidah
-            $table->text('examples')->nullable();    // contoh
+            $table->string('slug');
+            $table->text('title')->nullable(); // contoh: 'K. Tanda Petik Tunggal ("…")'
+            $table->text('path')->nullable(); // contoh: 'tanda-baca/tanda-petik-tunggal.md'
+            $table->longText('content_markdown')->nullable(); // isi markdown panjangnya
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('puebi_entries');

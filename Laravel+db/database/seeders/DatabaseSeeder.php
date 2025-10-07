@@ -20,8 +20,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Tambahkan seeder KBBI di sini
-        $this->call(\Database\Seeders\KbbiDictionarySeeder::class, 
-                    \Database\Seeders\PuebiEntriesSeeder::class,
-                     \Database\Seeders\KbbiEntriesSeeder::class);
+        $this->call([
+            \Database\Seeders\PuebiEntriesSeeder::class,
+            \Database\Seeders\KbbiEntriesSeeder::class,
+        ]);
     }
 }

@@ -18,24 +18,56 @@ class KbbiEntriesSeeder extends Seeder
         }
 
         $handle = fopen($path, "r");
-        $statement = "";
+        $buffer = '';
+        $inSingle = false;
+        $inDouble = false;
 
         while (($line = fgets($handle)) !== false) {
-            // Skip komentar (--) atau baris kosong
-            if (substr($line, 0, 2) == '--' || trim($line) === '') {
-                continue;
-            }
+            $len = strlen($line);
+            for ($i = 0; $i < $len; $i++) {
+                $ch = $line[$i];
+                $next = $i + 1 < $len ? $line[$i+1] : null;
 
-            $statement .= $line;
-
-            // Jika sudah ketemu tanda ; di akhir → eksekusi statement
-            if (substr(trim($line), -1) == ';') {
-                try {
-                    DB::unprepared($statement);
-                } catch (\Exception $e) {
-                    $this->command->error("Error executing statement: " . $e->getMessage());
+                // tangani quote
+                if ($ch === "'" && !$inDouble) {
+                    if ($inSingle && $next === "'") { // escape ''
+                        $buffer .= "''";
+                        $i++;
+                        continue;
+                    }
+                    $inSingle = !$inSingle;
+                    $buffer .= $ch;
+                    continue;
                 }
-                $statement = "";
+
+                if ($ch === '"' && !$inSingle) {
+                    $inDouble = !$inDouble;
+                    $buffer .= $ch;
+                    continue;
+                }
+
+                // statement selesai hanya jika ; di luar quote
+                if ($ch === ';' && !$inSingle && !$inDouble) {
+                    $buffer .= $ch;
+                    try {
+                        DB::unprepared($buffer);
+                    } catch (\Throwable $e) {
+                        $this->command->error("Error executing statement: " . $e->getMessage());
+                    }
+                    $buffer = '';
+                    continue;
+                }
+
+                $buffer .= $ch;
+            }
+        }
+
+        // leftover
+        if (trim($buffer) !== '') {
+            try {
+                DB::unprepared($buffer);
+            } catch (\Throwable $e) {
+                $this->command->error("Error executing trailing SQL: " . $e->getMessage());
             }
         }
 
