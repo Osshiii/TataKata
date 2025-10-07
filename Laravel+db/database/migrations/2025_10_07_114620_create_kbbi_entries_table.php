@@ -4,18 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('kbbi_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('lemma'); // kata dasar
-            $table->text('definition')->nullable(); // definisi
-            $table->string('word_class')->nullable(); // kelas kata (nomina, verba, dsb)
+            $table->string('word');
+            $table->text('arti')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
     }
-
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('kbbi_entries');
