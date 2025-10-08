@@ -6,6 +6,10 @@ from pydantic import BaseModel
 from app.puebi import get_puebi_reference
 import mysql.connector 
 from app.logger import log_corrections
+from transformers import pipeline
+
+# Load model pipeline di awal agar tidak reload setiap request
+tatakata = pipeline("fill-mask", model="citylighxts/TataKata")
 
 
 app = FastAPI(
@@ -148,3 +152,16 @@ def get_reference(slug: str):
 #         return results  
 #     except Exception as e:
 #         return {"error": f"Gagal mencari referensi: {str(e)}"}
+
+from pydantic import BaseModel
+
+class PredictRequest(BaseModel):
+    text: str
+
+@app.post("/api/predict")
+def predict_mask(req: PredictRequest):
+    try:
+        result = tatakata(req.text)
+        return {"predictions": result}
+    except Exception as e:
+        return {"error": str(e)}

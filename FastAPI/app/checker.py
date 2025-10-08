@@ -9,7 +9,6 @@ from app.rule_checkers import (
     check_diftong,
     check_gabungan_kata,
     check_kata_ganti,
-    check_bentuk_ulang,
     check_tanda_petik,
     check_titik_dua
 )
@@ -26,7 +25,6 @@ def check_rules(text: str):
     errors += check_diftong(text)
     errors += check_gabungan_kata(text)
     errors += check_kata_ganti(text)
-    errors += check_bentuk_ulang(text)
     errors += check_tanda_petik(text)
     errors += check_titik_dua(text)
     return errors
