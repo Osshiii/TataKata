@@ -1,8 +1,12 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Query
 from app.checker import check_rules
 from app.ai_dummy import ai_check
 from app.ai_service import ai_predict, load_model
 from pydantic import BaseModel
+from app.puebi import get_puebi_reference
+import mysql.connector 
+from app.logger import log_corrections
+
 
 app = FastAPI(
     title="TataKata Backend",
@@ -21,7 +25,7 @@ def startup_event():
 def read_root():
     return {"message": "TataKata API is running 🚀"}
 
-# pakai pydantic 
+# pakai pydantic 1 (pakai text request)
 # @app.post("/api/check-hybrid")
 # def check_hybrid(req: TextRequest):
 #     text = req.text
@@ -33,15 +37,69 @@ def read_root():
 #         "ai_suggestions": ai_suggestions
 #     }
 
+# pakai pydantic 2 (pakai dict + reference)
+# @app.post("/api/check-hybrid")
+# def check_hybrid(payload: dict):
+#     text = payload.get("text", "")
+#     rule_errors = check_rules(text)
+#     # kbbi_errors = check_kbbi(text) 
+#     enriched_errors = attach_reference(rule_errors)
+
+#     return {
+#         "text": text,
+#         "rule_based_errors": enriched_errors,
+#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
+#     }
+
+# pakai pydantic 3 (pakai text request + reference)
 @app.post("/api/check-hybrid")
-def check_hybrid(text: str):
+def check_hybrid(req: TextRequest):
+    text = req.text
     rule_errors = check_rules(text)
-    ai_suggestions = ai_check(text)
+    # kbbi_errors = check_kbbi(text) 
+    enriched_errors = attach_reference(rule_errors)
+    log_corrections(text, enriched_errors)  # logging hasil koreksi
+
     return {
         "text": text,
-        "rule_based_errors": rule_errors,
-        "ai_suggestions": ai_suggestions
+        "rule_based_errors": enriched_errors,
+        "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
     }
+
+
+
+def attach_reference(errors: list):
+    for err in errors:
+        ref = get_puebi_reference(err["rule_id"])
+        if ref:
+            err["reference"] = ref
+        else:
+            print(f"Referensi tidak ditemukan untuk rule_id: {err['rule_id']}")
+    return errors
+
+
+
+# attach reference, skip kbbi
+def attach_reference(errors: list):
+    for err in errors:
+        if err["rule_id"] != "kbbi":  # skip kbbi
+            ref = get_puebi_reference(err["rule_id"])
+            if ref:
+                err["reference"] = ref
+    return errors
+
+
+
+# tanpa pydantic
+# @app.post("/api/check-hybrid")
+# def check_hybrid(text: str):
+#     rule_errors = check_rules(text)
+#     ai_suggestions = ai_check(text)
+#     return {
+#         "text": text,
+#         "rule_based_errors": rule_errors,
+#         "ai_suggestions": ai_suggestions
+#     }
 
 @app.post("/api/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -57,3 +115,36 @@ async def upload_pdf(file: UploadFile = File(...)):
 def predict_ai(req: TextRequest):
     result = ai_predict(req.text)
     return {"ai_suggestions": result}
+
+
+@app.get("/api/puebi/{slug}")
+def get_reference(slug: str):
+    ref = get_puebi_reference(slug)
+    if ref:
+        return ref
+    return {"error": "Referensi tidak ditemukan"}
+
+
+# belum dipakai (buat search)
+# @app.get("/api/puebi/search")
+# def search_puebi(keyword: str = Query(..., min_length=2)):
+#     try:
+#         conn = mysql.connector.connect(
+#             host="localhost",
+#             user="root",
+#             password="",  # sesuaikan
+#             database="tatakata"
+#         )
+#         cursor = conn.cursor(dictionary=True)
+#         cursor.execute("""
+#             SELECT slug, title 
+#             FROM puebi_entries 
+#             WHERE title LIKE %s OR content_markdown LIKE %s
+#         """, (f"%{keyword}%", f"%{keyword}%"))
+#         results = cursor.fetchall()
+#         cursor.close()
+#         conn.close()
+
+#         return results  
+#     except Exception as e:
+#         return {"error": f"Gagal mencari referensi: {str(e)}"}

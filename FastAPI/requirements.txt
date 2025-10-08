@@ -2,6 +2,9 @@ fastapi
 uvicorn
 python-multipart
 pydantic
+fastapi
+mysql-connector-python
+
 
 # Untuk model AI (berat, install lama), uncomment baris di bawah:
 # torch # untuk inference HuggingFace

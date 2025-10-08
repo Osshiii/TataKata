@@ -1,44 +1,32 @@
-import re
-
-# Kamus referensi
-kata_tempat = ['rumah', 'sekolah', 'jalan', 'halaman', 'kantor', 'pasar', 'dalam', 'luar', 'atas', 'bawah']
-kata_kerja = ['makan', 'minum', 'baca', 'tulis', 'ambil', 'lihat', 'dengar', 'pakai', 'buat', 'kerjakan']
-
-def check_di_kata_depan(text):
-    errors = []
-    for tempat in kata_tempat:
-        if re.search(rf'\bdi{tempat}\b', text):
-            errors.append(f"Gunakan spasi setelah kata depan 'di' → seharusnya 'di {tempat}'.")
-    return errors
-
-
-def check_di_imbuhan(text):
-    errors = []
-    for kerja in kata_kerja:
-        if re.search(rf'\bdi {kerja}\b', text):
-            errors.append(f"Gabungkan imbuhan 'di-' dengan kata kerja → seharusnya 'di{kerja}'.")
-    return errors
+from app.rule_checkers import (
+    check_huruf_kapital,
+    check_tanda_baca_akhir,
+    check_tanda_baca_berulang,
+    check_spasi_setelah_koma,
+    check_kata_penghubung_di_awal,
+    check_kata_depan,
+    check_di_imbuhan,
+    check_diftong,
+    check_gabungan_kata,
+    check_kata_ganti,
+    check_bentuk_ulang,
+    check_tanda_petik,
+    check_titik_dua
+)
 
 def check_rules(text: str):
     errors = []
-
-    # Aturan umum
-    if not re.match(r'^[A-Z]', text.strip()):
-        errors.append("Kalimat harus dimulai dengan huruf kapital.")
-
-    if not text.strip().endswith(('.', '!', '?')):
-        errors.append("Kalimat harus diakhiri tanda baca (., !, ?).")
-
-    if re.search(r'[.!?]{2,}', text):
-        errors.append("Hindari penggunaan tanda baca berulang.")
-
-    if re.search(r',[^\s]', text):
-        errors.append("Gunakan spasi setelah koma.")
-
-    if re.match(r'^\s*dan\b', text.lower()):
-        errors.append("Kalimat tidak boleh dimulai dengan kata 'dan'.")
-
-    errors += check_di_kata_depan(text)
+    errors += check_huruf_kapital(text)
+    errors += check_tanda_baca_akhir(text)
+    errors += check_tanda_baca_berulang(text)
+    errors += check_spasi_setelah_koma(text)
+    errors += check_kata_penghubung_di_awal(text)
+    errors += check_kata_depan(text)
     errors += check_di_imbuhan(text)
-
+    errors += check_diftong(text)
+    errors += check_gabungan_kata(text)
+    errors += check_kata_ganti(text)
+    errors += check_bentuk_ulang(text)
+    errors += check_tanda_petik(text)
+    errors += check_titik_dua(text)
     return errors
