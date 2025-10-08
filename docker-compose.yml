@@ -1,9 +1,11 @@
 services:
   app:
     build: ./laravel+db
-    container_name: laravel-app
+    container_name: tatakata-app
     ports:
       - "${APP_PORT}:8000"
+    # expose:
+    #   - "8000"
     depends_on:
       - db
       - fastapi
@@ -24,6 +26,7 @@ services:
     image: mysql:8.0
     container_name: tatakata-db
     restart: unless-stopped
+    command: --require_secure_transport=OFF
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -64,4 +67,5 @@ volumes:
 
 networks:
   tatakata-net:
+    name: tatakata-net
     driver: bridge
