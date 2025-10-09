@@ -52,7 +52,7 @@ def check_huruf_kapital(text):
                         "rule_id": "huruf-kapital"
                     })
 
-    return []
+    return errors
 
 # tidak ada di puebi_entries
 def check_tanda_baca_akhir(text):
@@ -81,6 +81,7 @@ def check_spasi_setelah_koma(text):
             "rule_id": "spasi-setelah-koma"
         }]
     return []
+
 
 # tidak ada di puebi_entries
 def check_kata_penghubung_di_awal(text):

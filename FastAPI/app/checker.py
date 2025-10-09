@@ -13,6 +13,9 @@ from app.rule_checkers import (
     check_titik_dua
 )
 
+
+
+
 def check_rules(text: str):
     errors = []
     errors += check_huruf_kapital(text)
