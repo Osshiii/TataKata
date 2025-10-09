@@ -2,10 +2,8 @@ services:
   app:
     build: ./laravel+db
     container_name: tatakata-app
-    ports:
-      - "${APP_PORT}:8000"
-    # expose:
-    #   - "8000"
+    # ports:
+    #   - "${APP_PORT}:8000"
     depends_on:
       - db
       - fastapi
@@ -49,18 +47,18 @@ services:
     networks:
       - tatakata-net
 
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: tatakata-proxy
-  #   ports:
-  #     - "8000:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - app
-  #     - fastapi
-  #   networks:
-  #     - tatakata-net
+  nginx:
+    image: nginx:latest
+    container_name: tatakata-proxy
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+      - fastapi
+    networks:
+      - tatakata-net
 
 volumes:
   db_data:

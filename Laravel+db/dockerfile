@@ -1,21 +1,40 @@
 FROM php:8.3-fpm
 
-# Install dependencies
+# Install system dependencies and Node.js
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libpq-dev libxml2-dev libonig-dev \
+    zip unzip git curl libpq-dev libxml2-dev libonig-dev nodejs npm supervisor \
     && docker-php-ext-install pdo pdo_mysql mbstring
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www/html
 
+# Copy everything into container
 COPY . .
 
+# Install PHP and Node dependencies
+# Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Expose Laravel default port
-EXPOSE 8000
+# Install Node dependencies
+# RUN npm install
 
-# Start Laravel's built-in server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Build frontend assets
+# RUN npm run build
+
+# Copy environment file
+# RUN cp .env.example .env
+
+# Generate Laravel app key
+RUN php artisan key:generate
+
+# Add Supervisor configuration (to run multiple processes)
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose ports for Laravel (8000) and Vite (5173)
+EXPOSE 8000 5173
+
+# Run migrations + seed after container starts
+CMD php artisan migrate:fresh --seed && /usr/bin/supervisord
