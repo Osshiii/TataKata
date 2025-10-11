@@ -15,7 +15,6 @@ cp -n .env.example .env || true
 php artisan key:generate
 
 # Run *after* the docker is built
-# echo "Running database migrations..."
 # php artisan migrate:fresh --seed || php artisan migrate
 
 echo "Laravel setup complete."
