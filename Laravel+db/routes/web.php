@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/upload', [DocumentController::class, 'uploadForm'])->name('upload');
     Route::post('/upload', [DocumentController::class, 'upload'])->name('upload.post');
+    Route::post('/check-hybrid', [FastAPIController::class, 'checkHybrid'])->name('checkhybrid');
+    Route::post('/predict', [FastAPIController::class, 'predictMask'])->name('predict');
     Route::get('/history', [DocumentController::class, 'history'])->name('history');
 });
 
