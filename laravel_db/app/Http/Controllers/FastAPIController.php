@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class FastAPIController extends Controller
 {
@@ -13,74 +14,70 @@ class FastAPIController extends Controller
         $this->fastApiBase = env('AI_URL');
     }
 
-    /**
-     * Send text for hybrid grammar + AI checking
-     */
-    public function checkHybrid(Request $request)
+    // Universal helper
+    private function callFastAPI($method, $endpoint, $data = [], $file = null)
     {
-        $text = $request->input('text');
+        try {
+            $url = "{$this->fastApiBase}{$endpoint}";
 
-        $response = Http::post("{$this->fastApiBase}/api/check-hybrid", [
-            'text' => $text,
-        ]);
+            if ($file) {
+                $response = Http::attach(
+                    'file',
+                    file_get_contents($file->getRealPath()),
+                    $file->getClientOriginalName()
+                )->post($url);
+            } else {
+                $response = Http::send($method, $url, ['json' => $data]);
+            }
 
-        return $response->json();
+            return $response->json();
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Gagal terhubung ke FastAPI service',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /**
-     * Upload PDF file to FastAPI
-     */
+    // Hybrid grammar + AI check
+    public function checkHybrid(Request $request)
+    {
+        return $this->callFastAPI('POST', '/api/check-hybrid', [
+            'text' => $request->input('text')
+        ]);
+    }
+
+    // Upload PDF to FastAPI
     public function uploadPDF(Request $request)
     {
         $file = $request->file('file');
-
         if (!$file) {
             return response()->json(['error' => 'No file uploaded'], 400);
         }
 
-        $response = Http::attach(
-            'file',
-            file_get_contents($file->getRealPath()),
-            $file->getClientOriginalName()
-        )->post("{$this->fastApiBase}/api/upload-pdf");
-
-        return $response->json();
+        return $this->callFastAPI('POST', '/api/upload-pdf', [], $file);
     }
 
-    /**
-     * Get AI prediction (custom ai_predict)
-     */
+    // Custom AI prediction
     public function predictAI(Request $request)
     {
-        $text = $request->input('text');
-
-        $response = Http::post("{$this->fastApiBase}/api/predict-ai", [
-            'text' => $text,
+        return $this->callFastAPI('POST', '/api/predict-ai', [
+            'text' => $request->input('text')
         ]);
-
-        return $response->json();
     }
 
-    /**
-     * Get fill-mask model result (HuggingFace pipeline)
-     */
+    // Fill-mask model (HuggingFace)
     public function predictMask(Request $request)
     {
-        $text = $request->input('text');
-
-        $response = Http::post("{$this->fastApiBase}/api/predict", [
-            'text' => $text,
+        return $this->callFastAPI('POST', '/api/predict', [
+            'text' => $request->input('text')
         ]);
-
-        return $response->json();
     }
 
-    /**
-     * Get PUEBI reference by slug
-     */
+    // Get PUEBI reference
     public function getReference($slug)
     {
-        $response = Http::get("{$this->fastApiBase}/api/puebi/{$slug}");
-        return $response->json();
+        return $this->callFastAPI('GET', "/api/puebi/{$slug}");
     }
 }
