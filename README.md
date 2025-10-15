@@ -27,5 +27,6 @@ Website ini dirancang agar mudah digunakan. Mahasiswa cukup mendaftar dan login 
 7. Jalankan command ```php artisan serve``` untuk mengakses database ```Laravel``` di localhost browser (http://127.0.0.1:8000/).
 
 - FastAPI
-1. Jalankan instalasi library python dengan command ```python -m pip install fastapi uvicorn python-multipart pydantic mysql-connector-python torch transformers```.
-2. Jalankan command ```uvicorn app.main:app --host 127.0.0.1 --port 5000``` untuk mangakses database ```FastAPI``` di localhost browser (http://127.0.0.1:5000/).
+1. Jalankan command ```cd FastAPI``` untuk mengakses repositori ```FastAPI```.
+2. Jalankan instalasi library python dengan command ```python -m pip install fastapi uvicorn python-multipart pydantic mysql-connector-python torch transformers```.
+3. Jalankan command ```uvicorn app.main:app --host 127.0.0.1 --port 5000``` untuk mangakses database ```FastAPI``` di localhost browser (http://127.0.0.1:5000/).
