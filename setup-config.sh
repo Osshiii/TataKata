@@ -4,7 +4,7 @@ set -e
 cd laravel+db
 
 echo "Installing PHP dependencies..."
-composer install --no-interaction --prefer-dist --optimize-autoloader
+composer install
 
 echo "Installing Node dependencies..."
 npm install
@@ -16,6 +16,9 @@ php artisan key:generate
 
 # Run *after* the docker is built
 # php artisan migrate:fresh --seed || php artisan migrate
+
+# php artisan migrate:fresh --seed && php artisan serve
+# npm run dev
 
 echo "Laravel setup complete."
 
@@ -38,3 +41,6 @@ fi
 echo "FastAPI setup complete."
 
 cd ..
+
+# uvicorn app.main:app --host 127.0.0.1 --port 5000
+# uvicorn app.main:app --reload

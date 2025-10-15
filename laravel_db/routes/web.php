@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\FastAPIController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
