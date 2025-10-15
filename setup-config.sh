@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd laravel+db
+cd laravel_db
 
 echo "Installing PHP dependencies..."
 composer install
