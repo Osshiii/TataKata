@@ -16,10 +16,10 @@ class DocumentController extends Controller {
 
     public function upload(Request $request) {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,doc,docx,txt|max:10240', // max 10MB
+            'document' => 'required|file|mimes:pdf,doc,docx,txt|max:10240',
         ]);
 
-        $file = $request->file('file');
+        $file = $request->file('document');
         $filename = time().'_'.$file->getClientOriginalName();
         $path = $file->storeAs('documents', $filename, 'public');
 
@@ -27,7 +27,7 @@ class DocumentController extends Controller {
             'user_id' => Auth::id(),
             'file_name' => $file->getClientOriginalName(),
             'file_location' => $path,
-            'upload_status' => 'uploaded',
+            'upload_status' => 'Uploaded',
         ]);
 
         History::create([
@@ -40,8 +40,9 @@ class DocumentController extends Controller {
         return redirect()->route('history')->with('success', 'Dokumen berhasil diunggah!');
     }
 
-    public function history() {
-        $documents = Document::with('histories')->where('user_id', Auth::id())->get();
+    public function history()
+    {
+        $documents = Document::where('user_id', auth()->id())->paginate(10);
         return view('history', compact('documents'));
     }
 }
