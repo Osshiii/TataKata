@@ -37,4 +37,5 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 2. Jalankan instalasi library python dengan command ```python3 -m pip install fastapi uvicorn python-multipart pydantic mysql-connector-python torch transformers```.
-3. Jalankan command ```uvicorn app.main:app --host 127.0.0.1 --port 5000``` untuk mangakses database ```FastAPI``` di localhost browser (http://127.0.0.1:5000/).
+3. Jalankan command ```uvicorn app.main:app --host 127.0.0.1 --port 5000``` untuk mangakses database ```FastAPI``` di localhost browser (http://127.0.0.1:5000/docs)
+.
