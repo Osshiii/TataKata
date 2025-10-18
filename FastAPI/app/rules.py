@@ -151,24 +151,28 @@ def check_kata_ganti(text):
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # 13 F. Kata Depan // untuk Tempat dan Arah
-kata_tempat_dan_arah = [
-    "rumah", "sekolah", "pasar", "kantor", "jalan", "kamar", "dapur", "kelas",
-    "masjid", "gereja", "dalam", "luar", "atas", "bawah", "sana", "sini", "mana", "situ", "pulau", "lemari"
-]
-kata_depan = ["di", "ke", "dari"]
 def check_kata_depan(text):
     errors = []
+    kata_tempat_dan_arah = [
+        "rumah", "sekolah", "pasar", "kantor", "jalan", "kamar", "dapur", "kelas",
+        "masjid", "gereja", "dalam", "luar", "atas", "bawah", "sana", "sini", "mana", "situ", "pulau", "lemari"
+    ]
+    kata_depan = ["di", "ke", "dari"]
 
     for depan in kata_depan:
         for target in kata_tempat_dan_arah:
-            # Deteksi penulisan tanpa spasi: dimana, kesana, dariatas, dll
-            if re.search(rf'\b{depan}{target}\b', text.lower()):
+            pattern = rf'\b{depan}{target}\b'
+            for match in re.finditer(pattern, text.lower()):
                 errors.append({
                     "message": f"Kata depan '{depan}' harus ditulis terpisah → seharusnya '{depan} {target}'.",
-                    "rule_id": "kata-depan"
+                    "rule_id": "kata-depan",
+                    "suggestion": f"{depan} {target}",
+                    "start": match.start(),
+                    "end": match.end()
                 })
 
     return errors
+
 
 # /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # 14 H. Singkatan dan Akronim
@@ -201,23 +205,24 @@ def check_bentuk_ulang(text):
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # 17 B. Kata Berimbuhan
-kata_kerja = ['makan', 'minum', 'baca', 'tulis', 'ambil', 'lihat', 'dengar', 'pakai', 'buat', 'kerjakan']
 def check_kata_berimbuhan(text):
     errors = []
-    # Deteksi semua imbuhan awalan yang dipisah
-    matches = re.findall(r'\b(me|ber|ter|se|pe|di|ke|peng|pen|mem|men|meny|pem|peny)\s+(\w+)', text.lower())
+    kata_kerja = ['makan', 'minum', 'baca', 'tulis', 'ambil', 'lihat', 'dengar', 'pakai', 'buat', 'kerjakan']
+    imbuhan_awalan = ['me', 'ber', 'ter', 'se', 'pe', 'peng', 'pen', 'mem', 'men', 'meny', 'pem', 'peny', 'di']
+
+    matches = re.findall(r'\b(' + '|'.join(imbuhan_awalan) + r')\s+(\w+)', text.lower())
 
     for imbuhan, kata in matches:
-        # Khusus 'di' → validasi hanya jika kata kerja
         if imbuhan == "di" and kata not in kata_kerja:
-            continue
-
+            continue  # jangan koreksi kalau bukan kata kerja
         errors.append({
             "message": f"Imbuhan '{imbuhan}' harus dirangkai dengan kata → '{imbuhan}{kata}'.",
-            "rule_id": "kata-berimbuhan"
+            "rule_id": "kata-berimbuhan",
+            "suggestion": f"{imbuhan}{kata}"
         })
 
     return errors
+
 
 # belum tau
 # 18 K. Kata Sandang

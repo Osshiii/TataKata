@@ -6,3 +6,4 @@ fastapi
 mysql-connector-python
 torch
 transformers
+PyMuPDF>=1.22.3

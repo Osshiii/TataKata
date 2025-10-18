@@ -3,8 +3,12 @@ from pydantic import BaseModel
 import mysql.connector 
 from transformers import pipeline
 
+
+
 from app.ai_dummy import ai_check
 from app.ai_service import ai_predict, load_model
+
+from routes import pdf_checker
 
 from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
@@ -21,6 +25,7 @@ app = FastAPI(
     description="API untuk pengecekan tata bahasa dan upload PDF",
     version="0.1.0"
 )
+
 
 class TextRequest(BaseModel):
     text: str
@@ -54,6 +59,8 @@ def check_hybrid(req: TextRequest):
         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
     }
 
+app.include_router(pdf_checker.router)
+
 @app.post("/api/predict")
 def predict_mask(req: PredictRequest):
     try:
@@ -62,15 +69,23 @@ def predict_mask(req: PredictRequest):
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/api/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...)):
-    file_location = f"temp/{file.filename}"
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
-    return {
-        "filename": file.filename,
-        "message": "PDF berhasil diunggah dan disimpan."
-    }
+# @app.post("/api/upload-pdf")
+# async def upload_pdf(file: UploadFile = File(...)):
+#     file_location = f"temp/{file.filename}"
+#     with open(file_location, "wb") as f:
+#         f.write(await file.read())
+#     return {
+#         "filename": file.filename,
+#         "message": "PDF berhasil diunggah dan disimpan."
+#     }
+
+# @app.post("/analyze-pdf")
+# async def analyze_pdf(file: UploadFile = File(...)):
+#     doc = fitz.open(stream=await file.read(), filetype="pdf")
+#     full_text = "".join([page.get_text() for page in doc])
+#     errors = check_rules(full_text)
+#     return {"status": "success", "errors": errors}
+
 
 # referensi PUEBI
 def attach_reference(errors: list):
