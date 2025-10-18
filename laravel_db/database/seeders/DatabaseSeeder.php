@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             \Database\Seeders\PuebiEntriesSeeder::class,
             \Database\Seeders\KbbiEntriesSeeder::class,
+            \Database\Seeders\RuleEntriesSeeder::class,
         ]);
     }
 }
