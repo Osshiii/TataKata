@@ -14,8 +14,6 @@ from app.rule_checkers import (
 )
 
 
-
-
 def check_rules(text: str):
     errors = []
     errors += check_huruf_kapital(text)

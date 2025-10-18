@@ -7,10 +7,10 @@ from app.puebi import get_puebi_reference
 import mysql.connector 
 from app.logger import log_corrections
 from transformers import pipeline
+from app.kbbi_checker import check_kbbi
 
 # Load model pipeline di awal agar tidak reload setiap request
 tatakata = pipeline("fill-mask", model="citylighxts/TataKata")
-
 
 app = FastAPI(
     title="TataKata Backend",
@@ -59,51 +59,52 @@ def read_root():
 @app.post("/api/check-hybrid")
 def check_hybrid(req: TextRequest):
     text = req.text
-    rule_errors = check_rules(text)
-    # kbbi_errors = check_kbbi(text) 
-    enriched_errors = attach_reference(rule_errors)
-    log_corrections(text, enriched_errors)  # logging hasil koreksi
+    rule_errors = check_rules(text)         # ✅ rule_checkers
+    kbbi_errors = check_kbbi(text)          # ✅ KBBI checker
+    enriched_errors = attach_reference(rule_errors)  # ✅ tambahkan referensi PUEBI
+
+    # Gabungkan semua error
+    all_errors = enriched_errors + kbbi_errors
 
     return {
         "text": text,
-        "rule_based_errors": enriched_errors,
+        "rule_based_errors": all_errors,
         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
     }
 
+# @app.post("/api/check-hybrid")
+# def check_hybrid(req: TextRequest):
+#     text = req.text
+
+#     rule_errors = check_rules(text)
+#     print("[DEBUG] RULE ERRORS:", rule_errors)
+
+#     kbbi_errors = check_kbbi(text)
+#     print("[DEBUG] KBBI ERRORS:", kbbi_errors)
+
+#     enriched_errors = attach_reference(rule_errors)
+#     print("[DEBUG] ENRICHED:", enriched_errors)
+
+#     all_errors = enriched_errors + kbbi_errors  # ✅ gabung dua sumber error
+#     print("[DEBUG] FINAL ALL ERRORS:", all_errors)
+
+#     return {
+#         "text": text,
+#         "rule_based_errors": all_errors,
+#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
+#     }
+
 
 
 def attach_reference(errors: list):
     for err in errors:
-        ref = get_puebi_reference(err["rule_id"])
-        if ref:
-            err["reference"] = ref
-        else:
-            print(f"Referensi tidak ditemukan untuk rule_id: {err['rule_id']}")
-    return errors
-
-
-
-# attach reference, skip kbbi
-def attach_reference(errors: list):
-    for err in errors:
-        if err["rule_id"] != "kbbi":  # skip kbbi
+        if err["rule_id"] not in ["kbbi", "kbbi-valid"]:  # skip keduanya
             ref = get_puebi_reference(err["rule_id"])
             if ref:
                 err["reference"] = ref
     return errors
 
 
-
-# tanpa pydantic
-# @app.post("/api/check-hybrid")
-# def check_hybrid(text: str):
-#     rule_errors = check_rules(text)
-#     ai_suggestions = ai_check(text)
-#     return {
-#         "text": text,
-#         "rule_based_errors": rule_errors,
-#         "ai_suggestions": ai_suggestions
-#     }
 
 @app.post("/api/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -115,11 +116,11 @@ async def upload_pdf(file: UploadFile = File(...)):
         "message": "PDF berhasil diunggah dan disimpan."
     }
 
-@app.post("/api/predict-ai")
-def predict_ai(req: TextRequest):
-    result = ai_predict(req.text)
-    return {"ai_suggestions": result}
-
+# sudah ada yang /api/predict
+# @app.post("/api/predict-ai")
+# def predict_ai(req: TextRequest):
+#     result = ai_predict(req.text)
+#     return {"ai_suggestions": result}
 
 @app.get("/api/puebi/{slug}")
 def get_reference(slug: str):
@@ -127,7 +128,6 @@ def get_reference(slug: str):
     if ref:
         return ref
     return {"error": "Referensi tidak ditemukan"}
-
 
 # belum dipakai (buat search)
 # @app.get("/api/puebi/search")
@@ -152,8 +152,6 @@ def get_reference(slug: str):
 #         return results  
 #     except Exception as e:
 #         return {"error": f"Gagal mencari referensi: {str(e)}"}
-
-from pydantic import BaseModel
 
 class PredictRequest(BaseModel):
     text: str
