@@ -1,4 +1,4 @@
-from app.rule_checkers import (
+from TataKata.FastAPI.app.rules import (
     check_huruf_kapital,
     check_tanda_baca_akhir,
     check_tanda_baca_berulang,
@@ -6,7 +6,6 @@ from app.rule_checkers import (
     check_kata_penghubung_di_awal,
     check_kata_depan,
     check_di_imbuhan,
-    check_diftong,
     check_gabungan_kata,
     check_kata_ganti,
     check_tanda_petik,
@@ -23,7 +22,6 @@ def check_rules(text: str):
     errors += check_kata_penghubung_di_awal(text)
     errors += check_kata_depan(text)
     errors += check_di_imbuhan(text)
-    errors += check_diftong(text)
     errors += check_gabungan_kata(text)
     errors += check_kata_ganti(text)
     errors += check_tanda_petik(text)

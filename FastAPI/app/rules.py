@@ -8,7 +8,6 @@ kata_target = [
 ]
 kata_kerja = ['makan', 'minum', 'baca', 'tulis', 'ambil', 'lihat', 'dengar', 'pakai', 'buat', 'kerjakan']
 
-import re
 
 # 10
 def check_huruf_kapital(text):
@@ -116,24 +115,6 @@ def check_di_imbuhan(text):
                 "message": f"Gabungkan imbuhan 'di-' dengan kata kerja → seharusnya 'di{kerja}'.",
                 "rule_id": "imbuhan-di"
             })
-    return errors
-
-# 4
-def check_diftong(text):
-    errors = []
-    diftongs = ["ai", "au", "ei", "oi"]
-    words = re.findall(r'\b\w+\b', text.lower())
-
-    for word in words:
-        for diftong in diftongs:
-            # Cek apakah diftong muncul di tengah atau akhir kata
-            if re.search(rf'\w+{diftong}\w*$', word):
-                errors.append({
-                    "message": f"Kata '{word}' mengandung huruf diftong '{diftong}'. Pastikan penulisannya sesuai kaidah.",
-                    "rule_id": "huruf-diftong"
-                })
-                break  # Hindari duplikat error untuk satu kata
-
     return errors
 
 # 21
