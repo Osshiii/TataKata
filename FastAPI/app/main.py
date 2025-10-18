@@ -3,12 +3,12 @@ from pydantic import BaseModel
 import mysql.connector 
 from transformers import pipeline
 
-
-
 from app.ai_dummy import ai_check
 from app.ai_service import ai_predict, load_model
 
-from routes import pdf_checker
+# from routes import pdf_checker
+from routes.hybrid_checker import router as hybrid_router
+from routes.pdf_checker import router as pdf_router
 
 from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
@@ -26,7 +26,6 @@ app = FastAPI(
     version="0.1.0"
 )
 
-
 class TextRequest(BaseModel):
     text: str
 
@@ -42,24 +41,42 @@ def read_root():
     return {"message": "TataKata API is running 🚀"}
 
 # pakai pydantic (pakai text request + reference)
-@app.post("/api/check-hybrid")
-def check_hybrid(req: TextRequest):
-    text = req.text
-    rule_errors = check_rules(text)         # rule_checkers
-    kbbi_errors = check_kbbi(text)          # KBBI checker
-    # enriched_errors = attach_reference(rule_errors)  # tambahkan referensi PUEBI
+# @app.post("/api/check-hybrid")
+# def check_hybrid(req: TextRequest):
+#     text = req.text
+#     rule_errors = check_rules(text)         # rule_checkers
+#     kbbi_errors = check_kbbi(text)          # KBBI checker
+#     # enriched_errors = attach_reference(rule_errors)  # tambahkan referensi PUEBI
 
-    # Gabungkan semua error
-    # all_errors = enriched_errors + kbbi_errors
-    all_errors = rule_errors + kbbi_errors
+#     # Gabungkan semua error
+#     # all_errors = enriched_errors + kbbi_errors
+#     all_errors = rule_errors + kbbi_errors
 
-    return {
-        "text": text,
-        "rule_based_errors": all_errors,
-        "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
-    }
+#     return {
+#         "text": text,
+#         "rule_based_errors": all_errors,
+#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
+#     }
 
-app.include_router(pdf_checker.router)
+# @router.post("/api/check-hybrid")
+# def check_hybrid(req: TextRequest):
+#     text = req.text
+#     rule_errors = check_rules(text)
+#     kbbi_errors = check_kbbi(text)
+#     all_errors = rule_errors + kbbi_errors
+
+#     corrected_text = apply_corrections(text, all_errors)
+
+#     return {
+#         "original_text": text,
+#         "corrected_text": corrected_text,
+#         "corrections": all_errors,
+#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
+#     }
+
+app.include_router(hybrid_router)
+
+app.include_router(pdf_router)
 
 @app.post("/api/predict")
 def predict_mask(req: PredictRequest):
