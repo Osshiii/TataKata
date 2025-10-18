@@ -6,7 +6,7 @@ from transformers import pipeline
 from app.ai_dummy import ai_check
 from app.ai_service import ai_predict, load_model
 
-from TataKata.FastAPI.app.rule_checker import check_rules
+from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
 from app.puebi import get_puebi_reference
 
@@ -42,10 +42,11 @@ def check_hybrid(req: TextRequest):
     text = req.text
     rule_errors = check_rules(text)         # rule_checkers
     kbbi_errors = check_kbbi(text)          # KBBI checker
-    enriched_errors = attach_reference(rule_errors)  # tambahkan referensi PUEBI
+    # enriched_errors = attach_reference(rule_errors)  # tambahkan referensi PUEBI
 
     # Gabungkan semua error
-    all_errors = enriched_errors + kbbi_errors
+    # all_errors = enriched_errors + kbbi_errors
+    all_errors = rule_errors + kbbi_errors
 
     return {
         "text": text,
