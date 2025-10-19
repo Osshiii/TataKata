@@ -11,8 +11,10 @@
                 <img src="{{ asset('images/ikon-logo.png') }}" alt="Logo" class="w-12 h-12">
             </div>
 
-            {{-- Spacer --}}
-            <div></div>
+            {{-- Judul Tengah (Ditambahkan untuk konsistensi) --}}
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-[#0A0A2E] via-[#1E3A8A] to-[#3B82F6] bg-clip-text text-transparent drop-shadow-md tracking-wide">
+                Tata Kata.
+            </h1>
 
             {{-- User Menu --}}
             <div class="flex items-center gap-4">
@@ -49,37 +51,21 @@
     {{-- Main Container --}}
     <div class="relative w-full h-[calc(100vh-88px)] bg-gradient-to-br from-[#f1f1f8] via-[#e6e8f0] to-[#d6dae8] overflow-hidden">
         
-        {{-- Efek glossy --}}
+        {{-- Efek glossy & Semburan Background (Dipotong untuk brevity) --}}
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5)_0%,rgba(255,255,255,0)_55%)]"></div>
-
-        {{-- Semburan pink di kanan atas --}}
-        <div class="absolute -top-48 -right-48 w-[900px] h-[900px] 
-                    bg-gradient-to-br from-[#FFEAF1]/70 via-[#FFD9E0]/50 to-[#FFF4F7]/40 
-                    rounded-full blur-[220px] pointer-events-none"></div>
-
-        {{-- Semburan gradasi di sekitar pink --}}
-        <div class="absolute top-0 right-0 w-[700px] h-[700px] 
-                    bg-gradient-to-tr from-[#FFD6E0]/40 via-[#FFE0EB]/35 to-[#FFF0F3]/25 
-                    rounded-full blur-[200px] pointer-events-none"></div>
-
-        {{-- Semburan putih glossy di kiri bawah --}}
+        <div class="absolute -top-48 -right-48 w-[900px] h-[900px] bg-gradient-to-br from-[#FFEAF1]/70 via-[#FFD9E0]/50 to-[#FFF4F7]/40 rounded-full blur-[220px] pointer-events-none"></div>
+        <div class="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-tr from-[#FFD6E0]/40 via-[#FFE0EB]/35 to-[#FFF0F3]/25 rounded-full blur-[200px] pointer-events-none"></div>
         <div class="absolute -bottom-20 -left-20 w-[550px] h-[550px] bg-white/50 rounded-full blur-[150px] pointer-events-none"></div>
         <div class="absolute bottom-10 left-10 w-[450px] h-[450px] bg-white/35 rounded-full blur-[130px] pointer-events-none"></div>
-
-        {{-- Semburan di kanan bawah --}}
         <div class="absolute -bottom-28 -right-28 w-[600px] h-[600px] bg-[#E0E7FF]/45 rounded-full blur-[160px] pointer-events-none"></div>
         <div class="absolute bottom-10 right-10 w-[450px] h-[450px] bg-[#D6E0FF]/30 rounded-full blur-[120px] pointer-events-none"></div>
-
-        {{-- Semburan di bagian atas tengah --}}
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[420px] bg-[#F8F9FF]/45 rounded-full blur-[170px] pointer-events-none"></div>
-
-        {{-- Elemen 1 --}}
+        
+        {{-- Elemen 1 & 2 --}}
         <div class="absolute -top-12 -right-12 w-[350px] h-[350px] opacity-35 pointer-events-none" 
              style="filter: brightness(1.1) saturate(0.9) contrast(1.05) drop-shadow(0 0 6px rgba(200,200,220,0.3));">
             <img src="{{ asset('images/elemen-1.png') }}" alt="Elemen 1" class="w-full h-full object-contain">
         </div>
-
-        {{-- Elemen 2 --}}
         <div class="absolute bottom-4 left-0 w-[550px] h-[550px] opacity-30 pointer-events-none -translate-x-8" 
              style="filter: brightness(1.15) saturate(0.85) contrast(1.08) drop-shadow(0 0 10px rgba(200,200,220,0.35));">
             <img src="{{ asset('images/elemen-2.png') }}" alt="Elemen 2" class="w-full h-full object-contain object-left-bottom">
@@ -101,8 +87,8 @@
                 </h1>
             </div>
 
-            {{-- Cards Section --}}
-            <div class="flex gap-16 justify-center items-center flex-1">
+            {{-- Cards Section (Diubah menjadi 3 kartu) --}}
+            <div class="flex gap-10 justify-center items-center flex-1">
                 
                 {{-- Card 1: Unggah Dokumen --}}
                 <a href="{{ route('upload') }}" class="group">
@@ -120,7 +106,26 @@
                     </div>
                 </a>
 
-                {{-- Card 2: Riwayat --}}
+                {{-- Card 2: Rule Checker (Pemeriksaan Teks) --}}
+                <a href="{{ route('rule.checker') }}" class="group">
+                    <div class="bg-gradient-to-br from-[#4a5a7a] via-[#556080] to-[#5a6a8a] 
+                                rounded-[2rem] p-12 shadow-xl hover:shadow-2xl transition-all duration-300 
+                                hover:scale-105 w-64 h-64 flex flex-col items-center justify-center 
+                                text-center border-[2px] border-[#2a3a5a]">
+                        
+                        {{-- Ikon: Mewakili Teks / Penulisan --}}
+                        <svg class="w-16 h-16 text-white group-hover:text-blue-200 transition mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 12h6m-6 4h6m-5-4l-4 4V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"/>
+                        </svg>
+                        
+                        <h2 class="text-2xl font-bold text-white mt-2">
+                            Pemeriksaan<br>Teks
+                        </h2>
+                    </div>
+                </a>
+
+                {{-- Card 3: Riwayat --}}
                 <a href="{{ route('history') }}" class="group">
                     <div class="bg-gradient-to-br from-[#4a5a7a] via-[#556080] to-[#5a6a8a] 
                                 rounded-[2rem] p-12 shadow-xl hover:shadow-2xl transition-all duration-300 

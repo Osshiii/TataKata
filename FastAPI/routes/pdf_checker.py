@@ -67,13 +67,25 @@
 
 
 # versi 2 (dengan kalimat messege "teks sudah benar")
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+
+# Asumsi impor modul koreksi lainnya di sini
 from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
 from app.text_corrector import apply_corrections
 from app.pdf_reader import extract_text_from_pdf
 
 router = APIRouter()
+
+# --- Model Pydantic yang Sinkron dengan Laravel ---
+class TextCorrectionRequest(BaseModel):
+    """Model untuk menerima input teks mentah dari Laravel Controller."""
+    # Sesuai dengan payload yang dikirim dari Laravel Http::post()
+    title: Optional[str] = None
+    text: str # Kunci yang disepakati untuk teks mentah
+# -----------------------------------------------------
 
 @router.post("/api/correct-pdf")
 async def correct_pdf(file: UploadFile = File(...)):
@@ -100,6 +112,36 @@ async def correct_pdf(file: UploadFile = File(...)):
         # "debug_rules": errors // bisa di-uncomment untuk debugging
     }
 
+@router.post("/api/correct-text")
+async def correct_text(request_data: TextCorrectionRequest):
+    """Memproses input teks mentah dari JSON body untuk koreksi."""
+    
+    # 1. Dapatkan teks dari body request
+    text = request_data.text
+    
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="Konten teks tidak boleh kosong.")
+
+    # 2. Jalankan pemeriksaan aturan + KBBI
+    errors = check_rules(text) + check_kbbi(text)
+
+    # 3. Kalau tidak ada kesalahan, langsung kembalikan pesan
+    if not errors:
+        return {
+            "original_text": text,
+            "message": "Teks sudah benar, tidak ada koreksi yang diperlukan."
+        }
+
+    # 4. Kalau ada kesalahan, koreksi otomatis
+    corrected_text = apply_corrections(text, errors)
+
+    # 5. Kembalikan hasil
+    return {
+        "title": request_data.title, 
+        "original_text": text,
+        "corrected_text": corrected_text,
+        # "debug_rules": errors 
+    }
 
 
 # from fastapi import APIRouter, UploadFile, File, Query

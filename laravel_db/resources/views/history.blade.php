@@ -10,12 +10,6 @@
             {{-- Logo --}}
             <div class="flex items-center gap-3 relative">
                 <img src="{{ asset('images/ikon-logo.png') }}" alt="Logo" class="w-12 h-12">
-
-                {{-- Breadcrumb / Beranda --}}
-                <a href="{{ route('dashboard') }}" 
-                    class="absolute left-8 top-[120px] text-2xl font-semibold text-[#1a1a2e]/80 hover:underline">
-                    Beranda
-                </a>
             </div>
 
             {{-- Judul Tengah --}}
@@ -77,47 +71,80 @@
         </div>
 
         {{-- Konten Utama --}}
-        <main class="relative z-10 max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 py-12 flex flex-col justify-center h-[calc(100vh-88px)]">
+        <main class="relative z-10 max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 py-12 flex flex-col min-h-[calc(100vh-88px)]">
+
+            {{-- Breadcrumb / Beranda --}}
+            <a href="{{ route('dashboard') }}" 
+                class="block mb-8 text-2xl font-semibold text-[#1a1a2e]/80 hover:underline">
+                Beranda
+            </a>
 
             {{-- Judul --}}
             <h1 class="text-4xl md:text-5xl font-bold text-[#1a1a2e] mb-10 text-center">
-                Riwayat Dokumen
+                Riwayat Pemeriksaan
             </h1>
 
             {{-- Kotak Riwayat (silver glossy + border navy glossy) --}}
             <div class="bg-gradient-to-br from-[#d9d9d9]/90 via-[#e4e4e4]/80 to-[#cfcfcf]/90 backdrop-blur-md 
                         rounded-[2rem] p-10 md:p-12 shadow-2xl border-[2px] border-[#2a3a5a]/70
-                        text-gray-900 flex-1 flex flex-col justify-center">
+                        text-gray-900 flex-1 flex flex-col">
 
-                @if($documents && $documents->count() > 0)
+                {{-- Menggunakan $history dari Controller yang digabungkan --}}
+                @if(isset($history) && $history->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @foreach($documents as $doc)
+                        @foreach($history as $item)
+                        
+                            {{-- Tentukan URL Koreksi dan Nama menggunakan notasi array --}}
+                            @php
+                                // Mengakses properti sebagai array karena telah di-map di Controller
+                                $isDocument = $item['type'] === 'document';
+                                $name = $item['name'];
+                                $status = ucfirst($item['upload_status'] ?? 'Selesai');
+                                $createdAt = $item['created_at']->format('d M Y, H:i');
+                                
+                                if ($isDocument) {
+                                    $correctionUrl = route('correction.show', $item['id']);
+                                    $downloadUrl = asset('storage/'.$item['file_location']);
+                                    $typeBadge = 'Dokumen';
+                                } else {
+                                    $correctionUrl = route('text.correction.show', $item['id']);
+                                    $downloadUrl = null; 
+                                    $typeBadge = 'Teks';
+                                }
+                            @endphp
+
                         <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-[#2a3a5a]/50">
                             <div class="flex flex-col gap-3">
-                                <h3 class="text-xl font-semibold text-[#1a1a2e]">{{ $doc->file_name }}</h3>
+                                <span class="text-xs font-bold uppercase text-blue-600/80">{{ $typeBadge }}</span>
+                                <h3 class="text-xl font-semibold text-[#1a1a2e] truncate">{{ $name }}</h3>
+                                
                                 <div class="flex flex-wrap gap-4 text-sm text-gray-700">
                                     <span class="flex items-center gap-1">
                                         <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        {{ $doc->created_at->format('d M Y, H:i') }}
+                                        {{ $createdAt }}
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
                                         </svg>
-                                        {{ $doc->upload_status ?? 'Selesai' }}
+                                        {{ $status }}
                                     </span>
                                 </div>
+                                
                                 <div class="flex gap-3 mt-2">
-                                    <a href="correction/{{ $doc->id }}" 
+                                    <a href="{{ $correctionUrl }}" 
                                        class="px-5 py-2 bg-white text-gray-900 rounded-full hover:bg-gray-100 transition font-semibold text-sm">
-                                        Lihat
+                                        Lihat Hasil
                                     </a>
-                                    <a href="{{ asset('storage/'.$doc->file_location) }}" download
+                                    
+                                    @if($downloadUrl)
+                                    <a href="{{ $downloadUrl }}" download
                                        class="px-5 py-2 bg-gray-100 text-gray-900 rounded-full hover:bg-gray-200 transition font-semibold text-sm">
-                                        Unduh
+                                        Unduh File
                                     </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -128,10 +155,10 @@
                         <svg class="w-20 h-20 text-gray-500/60 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        <p class="text-lg mb-6 italic">Belum ada riwayat dokumen. Silakan unggah terlebih dahulu.</p>
+                        <p class="text-lg mb-6 italic">Belum ada riwayat pemeriksaan. Silakan unggah atau periksa teks.</p>
                         <a href="{{ route('upload') }}" 
                            class="px-8 py-2 bg-white text-gray-900 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg">
-                            Unggah Dokumen
+                            Mulai Pemeriksaan
                         </a>
                     </div>
                 @endif

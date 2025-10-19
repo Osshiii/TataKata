@@ -81,13 +81,6 @@ class DocumentController extends Controller
     return view('correction', compact('document', 'original_text', 'corrected_text'));
     }
 
-    // Riwayat dokumen user
-    public function history()
-    {
-        $documents = Document::where('user_id', Auth::id())->paginate(10);
-        return view('history', compact('documents'));
-    }
-
     public function download($id)
     {
         $document = Document::findOrFail($id);
