@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TataKata</title>
     @vite('resources/css/app.css')
+
 </head>
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
@@ -44,6 +45,9 @@
             <div class="md:w-1/2 flex justify-center mt-10 md:mt-0">
                 <img src="{{ asset('images/logo-tatakata.png') }}" alt="Logo TataKata" class="w-96 h-auto">
             </div>
+            
+            
+
         </main>
     </div>
 </body>
