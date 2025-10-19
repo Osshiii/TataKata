@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/check-hybrid', [FastAPIController::class, 'checkHybrid'])->name('checkhybrid');
     Route::post('/predict', [FastAPIController::class, 'predictMask'])->name('predict');
     Route::get('/history', [DocumentController::class, 'history'])->name('history');
+    Route::get('/correction/{document}', [DocumentController::class, 'showCorrection'])->name('correction.show');
 });
+
 
 require __DIR__.'/auth.php';

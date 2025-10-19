@@ -110,7 +110,7 @@
                                     </span>
                                 </div>
                                 <div class="flex gap-3 mt-2">
-                                    <a href="{{ asset('storage/'.$doc->file_location) }}" target="_blank"
+                                    <a href="correction/{{ $doc->id }}" 
                                        class="px-5 py-2 bg-white text-gray-900 rounded-full hover:bg-gray-100 transition font-semibold text-sm">
                                         Lihat
                                     </a>

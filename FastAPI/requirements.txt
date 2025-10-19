@@ -1,8 +1,8 @@
 fastapi
 uvicorn
-python-multipart
+python-dotenv
 pydantic
-fastapi
+google-genai
+python-multipart
 mysql-connector-python
-torch
-transformers
+PyMuPDF>=1.22.3
