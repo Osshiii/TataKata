@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Document;
 use App\Models\TextEntry;
 use Illuminate\View\View;
-use Illuminate\Support\Collection; // Penting untuk tipe data
+use Illuminate\Support\Collection;
 
 class HistoryController extends Controller
 {
@@ -46,11 +46,59 @@ class HistoryController extends Controller
                                  });
 
         // 3. Gabungkan dan urutkan
-        // Kita menggunakan Collection::merge() dan sortByDesc() pada array standar
         $history = $documents->merge($textEntries)
                              ->sortByDesc('created_at');
 
         // 4. Kirim sebagai $history
         return view('history', compact('history'));
+    }
+
+    /**
+     * Menghapus item (Document atau TextEntry) dari riwayat.
+     */
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required|integer',
+            'item_type' => 'required|in:document,text',
+        ]);
+
+        $itemId = $request->input('item_id');
+        $itemType = $request->input('item_type');
+        $userId = Auth::id();
+
+        try {
+            if ($itemType === 'document') {
+                // Hapus Dokumen
+                $item = Document::where('id', $itemId)
+                                ->where('user_id', $userId)
+                                ->firstOrFail();
+                
+                // Hapus file dari storage SANGAT PENTING
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($item->file_location);
+
+                $item->delete();
+                $message = 'Dokumen berhasil dihapus dari riwayat.';
+
+            } elseif ($itemType === 'text') {
+                // Hapus Entri Teks
+                $item = TextEntry::where('id', $itemId)
+                                 ->where('user_id', $userId)
+                                 ->firstOrFail();
+                $item->delete();
+                $message = 'Entri teks berhasil dihapus dari riwayat.';
+
+            } else {
+                abort(400, 'Tipe item tidak valid.');
+            }
+
+            return redirect()->route('history')->with('success', $message);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('history')->with('error', 'Item tidak ditemukan atau Anda tidak memiliki izin untuk menghapusnya.');
+        } catch (\Exception $e) {
+            \Log::error("Deletion Error: " . $e->getMessage());
+            return redirect()->route('history')->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }

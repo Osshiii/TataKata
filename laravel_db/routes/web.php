@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload', [DocumentController::class, 'uploadForm'])->name('upload');
     Route::post('/upload', [DocumentController::class, 'upload'])->name('upload.post');
     Route::get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::delete('/history/delete', [HistoryController::class, 'delete'])->name('history.delete');
     Route::get('/checker', [TextCheckerController::class, 'index'])->name('rule.checker');
     Route::post('/checker', [TextCheckerController::class, 'check'])->name('rule.check');
     Route::get('/correction/{document}', [DocumentController::class, 'showCorrection'])->name('correction.show');
