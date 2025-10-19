@@ -62,18 +62,18 @@ class FastAPIController extends Controller
     // Custom AI prediction
     public function predictAI(Request $request)
     {
-        return $this->callFastAPI('POST', '/api/predict-ai', [
+        return $this->callFastAPI('POST', '/api/ai/check', [
             'text' => $request->input('text')
         ]);
     }
 
-    // Fill-mask model (HuggingFace)
-    public function predictMask(Request $request)
-    {
-        return $this->callFastAPI('POST', '/api/predict', [
-            'text' => $request->input('text')
-        ]);
-    }
+    // // Fill-mask model (HuggingFace)
+    // public function predictMask(Request $request)
+    // {
+    //     return $this->callFastAPI('POST', '/api/predict', [
+    //         'text' => $request->input('text')
+    //     ]);
+    // }
 
     // Get PUEBI reference
     public function getReference($slug)

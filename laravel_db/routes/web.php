@@ -19,11 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/upload', [DocumentController::class, 'uploadForm'])->name('upload');
     Route::post('/upload', [DocumentController::class, 'upload'])->name('upload.post');
-    Route::post('/check-hybrid', [FastAPIController::class, 'checkHybrid'])->name('checkhybrid');
-    Route::post('/predict', [FastAPIController::class, 'predictMask'])->name('predict');
+    Route::post('/correct-text', [FastAPIController::class, 'checkHybrid'])->name('check-hybrid');
+    Route::post('/correct-pdf', [FastAPIController::class, 'uploadPDF'])->name('uploadPDF');
     Route::get('/history', [DocumentController::class, 'history'])->name('history');
     Route::get('/correction/{document}', [DocumentController::class, 'showCorrection'])->name('correction.show');
 });
-
 
 require __DIR__.'/auth.php';
