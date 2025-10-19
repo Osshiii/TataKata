@@ -32,4 +32,4 @@ Website ini dirancang agar mudah digunakan. Mahasiswa cukup mendaftar dan login 
 2. Jalankan instalasi library python dengan command ```python3 -m pip install fastapi uvicorn python-multipart pydantic mysql-connector-python torch transformers google-genai pymupdf```. Jika Anda menggunakan virtual environment, jalankan ```python3 -m venv .venv``` dan ```source .venv/bin/activate```.
 3. Jalankan command ```uvicorn app.main:app --host 127.0.0.1 --port 5000``` untuk mangakses database ```FastAPI``` di localhost browser (http://127.0.0.1:5000/docs).
 
-Untuk efisiensi waktu, jalankan ```config-setup.sh``` dengan run command ```bash config-setup.sh``` pada terminal Linux.
+Untuk efisiensi waktu, jalankan ```config-setup.sh``` pada root dengan run command ```bash config-setup.sh``` pada terminal Linux.
