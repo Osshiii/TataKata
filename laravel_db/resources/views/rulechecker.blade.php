@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-[#e8e8e8] relative overflow-hidden">
     
-    {{-- Header/Navbar --}}
+    {{-- Header/Navbar (Dipotong untuk brevity) --}}
     <header class="bg-gradient-to-r from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] shadow-lg relative z-20">
         <div class="max-w-full mx-auto py-5 px-8 flex justify-between items-center">
 
@@ -41,7 +41,7 @@
         </div>
     </header>
 
-    {{-- Background --}}
+    {{-- Background (Dipotong untuk brevity) --}}
     <div class="relative w-full h-[calc(100vh-88px)] bg-gradient-to-br from-[#f1f1f8] via-[#e6e8f0] to-[#d6dae8] overflow-hidden">
 
         {{-- Semburan dan Elemen Background --}}
@@ -85,14 +85,8 @@
 
                     {{-- Area Text Input (Textarea) --}}
                     <div class="bg-gray-100 rounded-2xl p-4 text-center relative">
-                        <textarea name="content" 
-                                  id="content"
-                                  rows="15"
-                                  placeholder="Masukkan atau tempelkan teks Anda di sini untuk diperiksa..."
-                                  required
-                                  class="w-full h-full p-6 bg-transparent text-gray-900 rounded-xl text-lg resize-none focus:outline-none placeholder-gray-500">
-                                  {{ old('content') }}
-                        </textarea>
+                        {{-- PERBAIKAN KRITIS: Semua atribut textarea di satu baris untuk menghilangkan whitespace --}}
+                        <textarea name="content" id="content" rows="15" placeholder="Masukkan atau tempelkan teks Anda di sini untuk diperiksa..." required class="w-full h-full p-6 bg-transparent text-gray-900 rounded-xl text-lg resize-none focus:outline-none placeholder-gray-500">{{ old('content') }}</textarea>
 
                         @error('content')
                             <p class="text-red-300 text-sm mt-2">{{ $message }}</p>
