@@ -37,7 +37,10 @@ class DocumentController extends Controller {
             'details' => 'Dokumen diunggah oleh user',
         ]);
 
-        return redirect()->route('history')->with('success', 'Dokumen berhasil diunggah!');
+        // new rosi
+        // return redirect()->route('history')->with('success', 'Dokumen berhasil diunggah!');
+        return redirect()->route('correction.show', $document->id)->with('success', 'Dokumen berhasil diunggah!');
+
     }
 
     public function history()
@@ -45,4 +48,14 @@ class DocumentController extends Controller {
         $documents = Document::where('user_id', auth()->id())->paginate(10);
         return view('history', compact('documents'));
     }
+
+    // new rosi
+    public function showCorrection(Document $document)
+    {
+    // sementara bikin kotak dummy dulu
+    $corrected_text = "Hasil koreksi akan tampil di sini setelah integrasi FastAPI.";
+
+    return view('correction', compact('document', 'corrected_text'));
+    }
+
 }

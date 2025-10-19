@@ -43,7 +43,7 @@ class FastAPIController extends Controller
     // Hybrid grammar + AI check
     public function checkHybrid(Request $request)
     {
-        return $this->callFastAPI('POST', '/api/check-hybrid', [
+        return $this->callFastAPI('POST', '/api/correct-text', [
             'text' => $request->input('text')
         ]);
     }
@@ -56,7 +56,7 @@ class FastAPIController extends Controller
             return response()->json(['error' => 'No file uploaded'], 400);
         }
 
-        return $this->callFastAPI('POST', '/api/upload-pdf', [], $file);
+        return $this->callFastAPI('POST', '/api/correct-pdf', [], $file);
     }
 
     // Custom AI prediction
