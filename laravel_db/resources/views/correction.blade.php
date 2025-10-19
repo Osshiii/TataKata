@@ -1,36 +1,148 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 900px; margin: 0 auto; padding: 20px;">
-    <h2>Hasil Koreksi untuk: {{ $document->file_name }}</h2>
+<div class="min-h-screen bg-[#e8e8e8] relative overflow-hidden">
+    
+    {{-- Header/Navbar --}}
+    <header class="bg-gradient-to-r from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] shadow-lg relative z-20">
+        <div class="max-w-full mx-auto py-5 px-8 flex justify-between items-center">
+            {{-- Logo --}}
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/ikon-logo.png') }}" alt="Logo" class="w-12 h-12">
+            </div>
 
-    @if(session('success'))
-        <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-top: 10px;">
-            {{ session('success') }}
-        </div>
-    @endif
+            {{-- Judul Tengah --}}
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-[#0A0A2E] via-[#1E3A8A] to-[#3B82F6] bg-clip-text text-transparent drop-shadow-md tracking-wide">
+                Tata Kata.
+            </h1>
 
-    <!-- Kotak dua kolom -->
-    <div style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
-        <!-- Teks Asli -->
-        <div style="flex: 1 1 45%; padding: 15px; border: 1px solid #ccc; border-radius: 5px; min-width: 300px;">
-            <h5>📄 Teks Asli</h5>
-            <p>
-                {{ $original_text }}
-            </p>
+            {{-- User Menu --}}
+            <div class="flex items-center gap-4">
+                <a href="{{ route('profile.edit') }}" class="relative flex items-center group">
+                    <svg class="w-9 h-9 text-white group-hover:text-blue-200 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </a>
+
+                <form method="POST" action="{{ route('logout') }}" class="relative group">
+                    @csrf
+                    <button type="submit" class="flex items-center justify-center w-9 h-9 hover:bg-white/10 rounded-full transition">
+                        <svg class="w-9 h-9 text-white group-hover:text-blue-200 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    {{-- Background --}}
+    <div class="relative w-full min-h-[calc(100vh-88px)] bg-gradient-to-br from-[#f1f1f8] via-[#e6e8f0] to-[#d6dae8] overflow-hidden pb-12">
+
+        {{-- Semburan pink lembut kanan atas --}}
+        <div class="absolute -top-48 -right-48 w-[900px] h-[900px] 
+                    bg-gradient-to-br from-[#FFEAF1]/70 via-[#FFD9E0]/50 to-[#FFF4F7]/40 
+                    rounded-full blur-[220px] pointer-events-none"></div>
+
+        {{-- Semburan putih glossy kiri bawah --}}
+        <div class="absolute -bottom-20 -left-20 w-[550px] h-[550px] bg-white/50 rounded-full blur-[150px] pointer-events-none"></div>
+
+        {{-- Elemen 1 --}}
+        <div class="absolute top-0 right-0 w-[320px] h-[320px] opacity-30 pointer-events-none">
+            <img src="{{ asset('images/elemen-1.png') }}" alt="Elemen 1" class="w-full h-full object-contain object-right">
         </div>
 
-        <!-- Hasil Koreksi -->
-        <div style="flex: 1 1 45%; padding: 15px; border: 1px solid #4CAF50; border-radius: 5px; min-width: 300px; background-color: #f0fff0;">
-            <h5>✅ Hasil Koreksi</h5>
-            <p>
-                {{ $corrected_text }}
-            </p>
+        {{-- Elemen 2 --}}
+        <div class="absolute bottom-0 left-0 w-[550px] h-[550px] opacity-30 pointer-events-none -translate-x-8 mb-[-2px]">
+            <img src="{{ asset('images/elemen-2.png') }}" alt="Elemen 2" class="w-full h-full object-contain object-left-bottom">
         </div>
+
+        {{-- Konten Utama --}}
+        <main class="relative z-10 px-6 sm:px-8 lg:px-12 py-8">
+
+            {{-- Breadcrumb --}}
+            <a href="{{ route('dashboard') }}" class="inline-block text-3xl font-semibold text-[#1a1a2e]/80 hover:underline mb-8 underline">
+                Beranda
+            </a>
+
+            {{-- Judul Halaman --}}
+            <h1 class="text-4xl md:text-5xl font-bold text-[#1a1a2e] mb-12 text-center">
+                Hasil Pemeriksaan
+            </h1>
+
+            {{-- Grid 2 Kolom --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto mb-12">
+                
+                {{-- Kolom Kiri: Teks Asli --}}
+                <div class="relative">
+                    {{-- Label Badge --}}
+                    <div class="flex justify-center mb-4">
+                        <span class="bg-[#556080] text-white px-8 py-3 rounded-full font-semibold text-lg shadow-lg">
+                            Teks Asli
+                        </span>
+                    </div>
+                    {{-- Card --}}
+                    <div class="bg-[#faf8f3] border-3 border-[#1a1a2e] rounded-[2.5rem] p-8 min-h-[600px] shadow-2xl">
+                        {{-- Icon dan Heading --}}
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-gray-300">
+                            <h5 class="text-xl font-bold text-gray-800">Teks Asli</h5>
+                        </div>
+                        
+                        {{-- Konten --}}
+                        <div class="prose max-w-none text-gray-800 leading-relaxed text-base">
+                            <p class="whitespace-pre-wrap">{{ $originalText ?? $original_text ?? 'Teks asli akan muncul di sini.' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Kolom Kanan: Koreksi AI --}}
+                <div class="relative">
+                    {{-- Label Badge --}}
+                    <div class="flex justify-center mb-4">
+                        <span class="bg-[#556080] text-white px-8 py-3 rounded-full font-semibold text-lg shadow-lg">
+                            Koreksi AI
+                        </span>
+                    </div>
+                    {{-- Card --}}
+                    <div class="bg-[#faf8f3] border-3 border-[#1a1a2e] rounded-[2.5rem] p-8 min-h-[600px] shadow-2xl">
+                        {{-- Icon dan Heading --}}
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-gray-300">
+                            <h5 class="text-xl font-bold text-gray-800">Hasil Koreksi</h5>
+                        </div>
+                        
+                        {{-- Konten --}}
+                        <div class="prose max-w-none text-gray-800 leading-relaxed text-base">
+                            <p class="whitespace-pre-wrap">{{ $correctedText ?? $corrected_text ?? 'Hasil koreksi akan ditampilkan di sini.' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Tombol Aksi --}}
+            <div class="flex flex-col sm:flex-row gap-6 justify-between items-center max-w-7xl mx-auto px-4">
+                <a href="{{ route('history') }}" 
+                   class="px-12 py-4 bg-white text-[#1a1a2e] rounded-full font-bold text-lg hover:bg-gray-100 transition-all duration-200 shadow-xl border-2 border-[#1a1a2e]">
+                    Riwayat
+                </a>
+                
+                <button onclick="applyAndDownload()" 
+                        class="px-12 py-4 bg-white text-[#1a1a2e] rounded-full font-bold text-lg hover:bg-gray-100 transition-all duration-200 shadow-xl border-2 border-[#1a1a2e]">
+                    Terapkan Semua & Unduh
+                </button>
+            </div>
+
+        </main>
     </div>
-
-    <a href="{{ route('history') }}" style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #007bff; color: #fff; border-radius: 5px; text-decoration: none;">
-        Kembali ke Riwayat
-    </a>
 </div>
+
+<script>
+function applyAndDownload() {
+    // Implementasi download nanti
+    alert('Fitur download sedang dalam pengembangan');
+    // window.location.href = "{{ route('history') }}";
+}
+</script>
 @endsection

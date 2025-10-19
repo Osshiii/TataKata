@@ -87,4 +87,22 @@ class DocumentController extends Controller
         $documents = Document::where('user_id', Auth::id())->paginate(10);
         return view('history', compact('documents'));
     }
+
+    public function download($id)
+    {
+        $document = Document::findOrFail($id);
+
+        // Cek apakah dokumen milik user yang sedang login
+        if ($document->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke file ini.');
+        }
+
+        $path = storage_path('app/public/' . $document->file_location);
+
+        if (!file_exists($path)) {
+            return back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->download($path, $document->file_name . '.' . pathinfo($path, PATHINFO_EXTENSION));
+    }
 }

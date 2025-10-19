@@ -4,11 +4,11 @@
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
 
     {{-- Navbar --}}
-    <header class="flex justify-between items-center px-8 py-6 bg-gradient-to-r from-indigo-700 to-indigo-500 shadow-lg">
+    <header class="flex justify-between items-center px-8 py-6 bg-gradient-to-r from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] shadow-lg">
         <div class="text-2xl font-bold text-white">Tata Kata</div>
         <div class="space-x-4">
-            <a href="{{ route('login') }}" class="px-6 py-2.5 border-2 border-white text-white rounded-full hover:bg-white hover:text-indigo-600 transition-all duration-300 font-medium">Masuk</a>
-            <a href="{{ route('register') }}" class="px-6 py-2.5 bg-white text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-300 font-medium shadow-md">Daftar</a>
+            <a href="{{ route('login') }}" class="px-6 py-2.5 border-2 border-white text-white rounded-full hover:bg-white hover:text-[#4a4a6a] transition-all duration-300 font-medium">Masuk</a>
+            <a href="{{ route('register') }}" class="px-6 py-2.5 bg-white text-[#4a4a6a] rounded-full hover:bg-indigo-50 transition-all duration-300 font-medium shadow-md">Daftar</a>
         </div>
     </header>
 
@@ -19,7 +19,7 @@
         <div class="max-w-2xl space-y-8 flex-1">
             <div class="space-y-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">Periksa Kata, Sempurnakan Bahasa</h2>
-                <h1 class="text-6xl md:text-7xl font-extrabold text-indigo-700">Tata Kata.</h1>
+                <h1 class="text-6xl md:text-7xl font-extrabold text-[#4a4a6a]">Tata Kata.</h1>
             </div>
             
             <p class="text-lg md:text-xl text-gray-600 leading-relaxed">
@@ -28,16 +28,34 @@
 
             {{-- Fitur Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
-                <div class="bg-gradient-to-br from-indigo-700 to-indigo-600 text-white text-center p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <p class="font-semibold text-lg">Pemrosesan Bahasa Berbasis AI</p>
-                </div>
-                <div class="bg-gradient-to-br from-indigo-600 to-indigo-500 text-white text-center p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <p class="font-semibold text-lg">Semua Fitur Gratis</p>
-                </div>
-                <div class="bg-gradient-to-br from-indigo-500 to-indigo-400 text-white text-center p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 md:col-span-2">
-                    <p class="font-semibold text-lg">Kompatibilitas Penuh</p>
-                </div>
-            </div>
+    <!-- Kartu 1 -->
+    <div
+        class="relative bg-gradient-to-br from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] text-white text-center p-8 rounded-3xl shadow-lg
+               hover:shadow-2xl  hover:from-[#5c5c80] hover:to-[#8b9ac2]
+               transition-all duration-500 ease-out transform hover:-translate-y-2 hover:rotate-[1deg]
+               before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-r before:from-purple-500 before:to-pink-500 before:opacity-0 hover:before:opacity-30 before:blur-2xl before:transition-opacity">
+        <p class="font-semibold text-lg relative z-10">Pemrosesan Bahasa Berbasis AI</p>
+    </div>
+
+    <!-- Kartu 2 -->
+    <div
+        class="relative bg-gradient-to-br from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] text-white p-8 flex items-center justify-center rounded-3xl shadow-lg
+               hover:shadow-2xl hover:scale-[1.05] hover:from-[#5c5c80] hover:to-[#8b9ac2]
+               transition-all duration-500 ease-out transform hover:-translate-y-2 hover:-rotate-[1deg]
+               before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500 before:opacity-0 hover:before:opacity-30 before:blur-2xl before:transition-opacity">
+        <p class="font-semibold text-lg relative z-10">Semua Fitur Gratis</p>
+    </div>
+
+    <!-- Kartu 3 -->
+    <div
+        class="relative bg-gradient-to-br from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] text-white text-center p-8 rounded-3xl shadow-lg md:col-span-2
+               hover:shadow-2xl hover:scale-[1.03] hover:from-[#5c5c80] hover:to-[#8b9ac2]
+               transition-all duration-500 ease-out transform hover:-translate-y-2
+               before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-r before:from-pink-500 before:to-orange-400 before:opacity-0 hover:before:opacity-30 before:blur-2xl before:transition-opacity">
+        <p class="font-semibold text-lg relative z-10">Kompatibilitas Penuh</p>
+    </div>
+</div>
+
         </div>
 
         {{-- Ilustrasi Kanan - Lebih Besar --}}
@@ -54,11 +72,13 @@
         </div>
     </main>
 
-    {{-- Footer Wave (Optional) --}}
-    <div class="mt-auto">
-        <svg class="w-full h-24 fill-indigo-700" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
-        </svg>
-    </div>
+    <footer class="bg-gradient-to-r from-[#4a4a6a] via-[#5a6080] to-[#6a7a9a] text-white text-center py-4">
+        <p class="text-sm">
+            &copy; {{ date('Y') }} <span class="font-semibold">TataKata</span>. Semua hak cipta dilindungi.
+        </p>
+        <p class="text-xs opacity-80 mt-1">
+            Tata Kata 
+        </p>
+    </footer>
 </div>
 @endsection
