@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\TextCheckerController;
 use App\Http\Controllers\FastAPIController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,8 +21,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/upload', [DocumentController::class, 'uploadForm'])->name('upload');
     Route::post('/upload', [DocumentController::class, 'upload'])->name('upload.post');
-    Route::get('/history', [DocumentController::class, 'history'])->name('history');
+    Route::get('/history', [HistoryController::class, 'index'])->name('history');
+    Route::get('/checker', [TextCheckerController::class, 'index'])->name('rule.checker');
+    Route::post('/checker', [TextCheckerController::class, 'check'])->name('rule.check');
     Route::get('/correction/{document}', [DocumentController::class, 'showCorrection'])->name('correction.show');
+    Route::get('/correction/text/{textEntry}', [TextCheckerController::class, 'showCorrection'])->name('text.correction.show');
 });
 
 require __DIR__.'/auth.php';
