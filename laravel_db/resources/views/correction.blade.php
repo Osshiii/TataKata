@@ -16,8 +16,7 @@
         <div style="flex: 1 1 45%; padding: 15px; border: 1px solid #ccc; border-radius: 5px; min-width: 300px;">
             <h5>📄 Teks Asli</h5>
             <p>
-                {{-- sementara kita pakai teks dummy --}}
-                Teks asli akan muncul di sini.
+                {{ $original_text }}
             </p>
         </div>
 
