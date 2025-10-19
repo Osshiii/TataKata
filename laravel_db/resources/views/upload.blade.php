@@ -103,7 +103,7 @@
                     {{-- Area Upload --}}
                     <div class="bg-gray-100 rounded-2xl p-10 text-center relative">
                         <input type="file" 
-                               name="document" 
+                               name="file" 
                                id="document"
                                accept=".pdf,.doc,.docx"
                                required
