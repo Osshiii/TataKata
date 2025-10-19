@@ -10,6 +10,7 @@ npm install
 npm run build
 cp -n .env.example .env || true
 php artisan key:generate
+php artisan storage:link
 php artisan migrate:fresh --seed
 
 # npm run dev
