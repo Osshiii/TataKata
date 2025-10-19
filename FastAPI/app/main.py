@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, File, Query
 from pydantic import BaseModel
 
 from app.ai_service import ai_predict
+from routes import ai_checker
 from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
 from app.puebi import get_puebi_reference
@@ -14,7 +15,7 @@ from routes.hybrid_checker import router as hybrid_router
 from routes.pdf_checker import router as pdf_router
 
 app = FastAPI(
-    title="TataKata Backend",
+    title="TataKata AI Service",
     description="API untuk pengecekan tata bahasa dan upload PDF",
     version="0.1.0"
 )
@@ -76,6 +77,7 @@ def grammar_check(req: GrammarRequest):
 # Router tambahan
 app.include_router(hybrid_router)
 app.include_router(pdf_router)
+app.include_router(ai_checker.router)
 
 # Referensi PUEBI
 @app.get("/api/puebi/{slug}")
