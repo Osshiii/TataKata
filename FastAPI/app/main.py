@@ -1,24 +1,17 @@
+# app/main.py
 from fastapi import FastAPI, UploadFile, File, Query
 from pydantic import BaseModel
-import mysql.connector 
-from transformers import pipeline
 
-from app.ai_dummy import ai_check
-from app.ai_service import ai_predict, load_model
-
-# from routes import pdf_checker
-from routes.hybrid_checker import router as hybrid_router
-from routes.pdf_checker import router as pdf_router
-
+from app.ai_service import ai_predict
 from app.rule_checker import check_rules
 from app.kbbi_checker import check_kbbi
 from app.puebi import get_puebi_reference
-
 from app.logger import log_corrections
+from app.text_corrector import apply_corrections
 
-
-# Load model pipeline di awal agar tidak reload setiap request
-tatakata = pipeline("fill-mask", model="citylighxts/TataKata")
+# Router
+from routes.hybrid_checker import router as hybrid_router
+from routes.pdf_checker import router as pdf_router
 
 app = FastAPI(
     title="TataKata Backend",
@@ -26,99 +19,68 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Model request body
 class TextRequest(BaseModel):
     text: str
 
 class PredictRequest(BaseModel):
     text: str
 
-@app.on_event("startup")
-def startup_event():
-    load_model()
+class GrammarRequest(BaseModel):
+    text: str
+
+class GrammarResponse(BaseModel):
+    original_text: str
+    ai_suggestion: list
+    corrected_text: str = None
+    manual_review: list = None
 
 @app.get("/")
 def read_root():
     return {"message": "TataKata API is running 🚀"}
 
-# pakai pydantic (pakai text request + reference)
-# @app.post("/api/check-hybrid")
-# def check_hybrid(req: TextRequest):
-#     text = req.text
-#     rule_errors = check_rules(text)         # rule_checkers
-#     kbbi_errors = check_kbbi(text)          # KBBI checker
-#     # enriched_errors = attach_reference(rule_errors)  # tambahkan referensi PUEBI
+# Endpoint untuk Gemini AI grammar correction
+@app.post("/api/grammar-check", response_model=GrammarResponse)
+def grammar_check(req: GrammarRequest):
+    """
+    Endpoint untuk memperbaiki grammar Bahasa Indonesia
+    menggunakan AI Gemini + rule checker + KBBI.
+    """
+    text = req.text
 
-#     # Gabungkan semua error
-#     # all_errors = enriched_errors + kbbi_errors
-#     all_errors = rule_errors + kbbi_errors
+    # 1. AI prediction
+    ai_suggestions = ai_predict(text)
+    # 2. Rule checking
+    rule_errors = check_rules(text)
+    # 3. KBBI checking
+    kbbi_errors = check_kbbi(text)
+    # 4. Gabungkan semua error
+    all_errors = rule_errors + kbbi_errors
+    # 5. Attach PUEBI references
+    for err in all_errors:
+        ref = get_puebi_reference(err["rule_id"])
+        if ref:
+            err["reference"] = ref
+    # 6. Apply automatic corrections
+    corrected_text, manual_review = apply_corrections(text, all_errors, debug=True)
+    # 7. Log koreksi ke database
+    log_corrections(text, all_errors)
 
-#     return {
-#         "text": text,
-#         "rule_based_errors": all_errors,
-#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
-#     }
+    return {
+        "original_text": text,
+        "ai_suggestion": ai_suggestions,
+        "corrected_text": corrected_text,
+        "manual_review": manual_review
+    }
 
-# @router.post("/api/check-hybrid")
-# def check_hybrid(req: TextRequest):
-#     text = req.text
-#     rule_errors = check_rules(text)
-#     kbbi_errors = check_kbbi(text)
-#     all_errors = rule_errors + kbbi_errors
-
-#     corrected_text = apply_corrections(text, all_errors)
-
-#     return {
-#         "original_text": text,
-#         "corrected_text": corrected_text,
-#         "corrections": all_errors,
-#         "ai_suggestions": ["(AI dummy) Kalimat sudah cukup efektif."]
-#     }
-
+# Router tambahan
 app.include_router(hybrid_router)
-
 app.include_router(pdf_router)
 
-@app.post("/api/predict")
-def predict_mask(req: PredictRequest):
-    try:
-        result = tatakata(req.text)
-        return {"predictions": result}
-    except Exception as e:
-        return {"error": str(e)}
-
-# @app.post("/api/upload-pdf")
-# async def upload_pdf(file: UploadFile = File(...)):
-#     file_location = f"temp/{file.filename}"
-#     with open(file_location, "wb") as f:
-#         f.write(await file.read())
-#     return {
-#         "filename": file.filename,
-#         "message": "PDF berhasil diunggah dan disimpan."
-#     }
-
-# @app.post("/analyze-pdf")
-# async def analyze_pdf(file: UploadFile = File(...)):
-#     doc = fitz.open(stream=await file.read(), filetype="pdf")
-#     full_text = "".join([page.get_text() for page in doc])
-#     errors = check_rules(full_text)
-#     return {"status": "success", "errors": errors}
-
-
-# referensi PUEBI
-def attach_reference(errors: list):
-    for err in errors:
-        if err["rule_id"] not in ["kbbi", "kbbi-valid"]:  # skip keduanya, cek nanti apa perlu ini
-            ref = get_puebi_reference(err["rule_id"])
-            if ref:
-                err["reference"] = ref
-    return errors
-
-# api untuk mendapatkan referensi PUEBI berdasarkan slug
+# Referensi PUEBI
 @app.get("/api/puebi/{slug}")
 def get_reference(slug: str):
     ref = get_puebi_reference(slug)
     if ref:
         return ref
     return {"error": "Referensi tidak ditemukan"}
-
-
