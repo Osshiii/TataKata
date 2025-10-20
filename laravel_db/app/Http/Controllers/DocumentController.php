@@ -1,44 +1,41 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\History;
+use App\Jobs\ProcessDocumentCorrection; 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Smalot\PdfParser\Parser;
 
 class DocumentController extends Controller
 {
-    // Form upload
     public function uploadForm()
     {
         return view('upload');
     }
 
-    // Upload file ke storage dan DB
     public function upload(Request $request)
     {
         $request->validate([
             'document_name' => 'required|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,txt|max:10240',
+            'file' => 'required|mimes:pdf|max:10240',
         ]);
 
         $file = $request->file('file');
         $document_name = $request->input('document_name');
 
-        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $extension = $file->getClientOriginalExtension();
-        $cleanName = preg_replace('/[^A-Za-z0-9_-]/', '_', $originalName);
-        $filename = time() . '_' . $cleanName . '.' . $extension;
-
+        $filename = time() . '_' . preg_replace('/[^A-Za-z0-9_-]/', '_', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.pdf';
         $path = $file->storeAs('documents', $filename, 'public');
 
         $document = Document::create([
             'user_id' => Auth::id(),
             'file_name' => $document_name,
             'file_location' => $path,
-            'upload_status' => 'Uploaded',
+            'upload_status' => 'Processing', 
         ]);
 
         History::create([
@@ -48,44 +45,82 @@ class DocumentController extends Controller
             'details' => 'Dokumen diunggah oleh user',
         ]);
 
-        return redirect()->route('correction.show', $document->id)
-                         ->with('success', 'Dokumen berhasil diunggah!');
+        ProcessDocumentCorrection::dispatch($document);
+
+        return redirect()->route('correction.status', $document->id) 
+                         ->with('success', 'Dokumen berhasil diunggah dan sedang diproses...');
     }
 
-    // Tampilkan halaman koreksi dan ambil hasil dari FastAPI
-    public function showCorrection(Document $document)
+    public function checkStatus($id)
     {
-    $file_path = storage_path("app/public/{$document->file_location}");
+        try {
+            \Log::info("🔵 Polling received for Document ID {$id}"); 
 
-    if (!file_exists($file_path)) {
-        return redirect()->route('upload')->with('error', 'File tidak ditemukan.');
+            $document = Document::findOrFail($id);
+
+            if ($document->user_id !== Auth::id()) {
+                return response()->json(['status' => 'Unauthorized'], 403);
+            }
+
+            $document->refresh();
+            $status = trim($document->upload_status ?? '');
+            $isCompleted = ($status === 'Completed');
+
+            \Log::info("🟢 Document ID {$id} status: '{$status}'. Done: {$isCompleted}");
+
+            return response()->json([
+                'status' => $document->upload_status,
+                'done' => $isCompleted,
+                'redirect_url' => route('correction.show', $document->id)
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error("❌ checkStatus ERROR: " . $e->getMessage(), [
+                'document_id' => $id
+            ]);
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
     }
 
-    // Kirim file PDF ke FastAPI
-    try {
-        $response = Http::attach(
-            'file',
-            file_get_contents($file_path),
-            $document->file_name . '.pdf' // pastikan nama file unik
-        )->post(env('AI_URL') . '/api/correct-pdf');
+    public function showStatus($id)
+    {
+        $document = Document::findOrFail($id); 
+        
+        if ($document->user_id !== Auth::id()) {
+            abort(403);
+        }
 
-        // $data = $response->json();
-        // $corrected_text = $data['corrected_text'] ?? ($data['message'] ?? 'Gagal koreksi dari FastAPI');
-        $data = $response->json();
-        $original_text = $data['original_text'] ?? '-';
-        $corrected_text = $data['corrected_text'] ?? ($data['message'] ?? 'Gagal koreksi dari FastAPI');
-    } catch (\Exception $e) {
-        $corrected_text = "Gagal menghubungi FastAPI: " . $e->getMessage();
+        return view('correction_status', compact('document'));
     }
 
-    return view('correction', compact('document', 'original_text', 'corrected_text'));
+    public function showCorrection($id)
+    {
+        DB::reconnect();
+        $document = Document::findOrFail($id);
+        $document->refresh();
+
+        if ($document->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $statusLower = strtolower(trim($document->upload_status ?? ''));
+        $isCompleted = ($statusLower === 'completed');
+
+        if (!$isCompleted) {
+            \Log::warning("⚠️ Clash Detected: User tried accessing completed page for ID {$id} but status is '{$document->upload_status}'");
+            return view('correction_status', compact('document'));
+        }
+
+        return view('correction', [
+            'document' => $document,
+            'original_text' => $document->original_text,
+            'corrected_text' => $document->corrected_text,
+        ]);
     }
 
     public function download($id)
     {
         $document = Document::findOrFail($id);
 
-        // Cek apakah dokumen milik user yang sedang login
         if ($document->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke file ini.');
         }
@@ -96,6 +131,6 @@ class DocumentController extends Controller
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        return response()->download($path, $document->file_name . '.' . pathinfo($path, PATHINFO_EXTENSION));
+        return response()->download($path, $document->file_name . '.pdf');
     }
 }

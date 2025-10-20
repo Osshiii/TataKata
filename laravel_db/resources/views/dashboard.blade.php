@@ -106,26 +106,7 @@
                     </div>
                 </a>
 
-                {{-- Card 2: Rule Checker (Pemeriksaan Teks) --}}
-                <a href="{{ route('rule.checker') }}" class="group">
-                    <div class="bg-gradient-to-br from-[#4a5a7a] via-[#556080] to-[#5a6a8a] 
-                                rounded-[2rem] p-12 shadow-xl hover:shadow-2xl transition-all duration-300 
-                                hover:scale-105 w-64 h-64 flex flex-col items-center justify-center 
-                                text-center border-[2px] border-[#2a3a5a]">
-                        
-                        {{-- Ikon: Mewakili Teks / Penulisan --}}
-                        <svg class="w-16 h-16 text-white group-hover:text-blue-200 transition mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M9 12h6m-6 4h6m-5-4l-4 4V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"/>
-                        </svg>
-                        
-                        <h2 class="text-2xl font-bold text-white mt-2">
-                            Pemeriksaan<br>Teks
-                        </h2>
-                    </div>
-                </a>
-
-                {{-- Card 3: Riwayat --}}
+                {{-- Card 2: Riwayat --}}
                 <a href="{{ route('history') }}" class="group">
                     <div class="bg-gradient-to-br from-[#4a5a7a] via-[#556080] to-[#5a6a8a] 
                                 rounded-[2rem] p-12 shadow-xl hover:shadow-2xl transition-all duration-300 
