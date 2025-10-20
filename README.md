@@ -27,6 +27,10 @@ Website ini dirancang agar mudah digunakan. Mahasiswa cukup mendaftar dan login 
 7. Jalankan command ```php artisan storage:link``` untuk menyimpan dokumen.
 8. Jalankan command ```php artisan serve``` untuk mengakses database ```Laravel``` di localhost browser (http://127.0.0.1:8000/).
 
+di terminal 1: php artisan serve
+di terminal 2: php artisan queue:work --tries=3 --timeout=300
+di terminal 3: npm run dev
+
 - FastAPI
 1. Jalankan command ```cd FastAPI``` untuk mengakses repositori ```FastAPI```.
 2. Jalankan instalasi library python dengan command ```python3 -m pip install fastapi uvicorn python-multipart pydantic mysql-connector-python torch transformers google-genai pymupdf```. Jika Anda menggunakan virtual environment, jalankan ```python3 -m venv .venv``` dan ```source .venv/bin/activate```.

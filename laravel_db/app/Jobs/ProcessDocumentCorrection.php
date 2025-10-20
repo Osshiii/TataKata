@@ -44,6 +44,9 @@ class ProcessDocumentCorrection implements ShouldQueue
                 return;
             }
 
+            $clean_text = mb_convert_encoding($original_text, 'UTF-8', 'UTF-8');
+            $clean_text = preg_replace('/[[:cntrl:]]/', '', $clean_text);
+            $original_text = $clean_text;
             $corrected_text = $this->correctTextWithGemini($original_text);
 
             if (str_starts_with($corrected_text, 'ERROR:')) {
@@ -71,8 +74,9 @@ class ProcessDocumentCorrection implements ShouldQueue
             $apiKey = env('GOOGLE_API_KEY');
             $modelName = 'gemini-2.5-flash'; 
             $url = "https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key=" . $apiKey;
-            $timeoutDuration = 0;
+            $timeoutDuration = 0; // Mengandalkan timeout Job Laravel (300s)
 
+            // Pastikan $text adalah string UTF-8 yang bersih
             $response = Http::timeout($timeoutDuration)->post($url, [
                 'contents' => [
                     [

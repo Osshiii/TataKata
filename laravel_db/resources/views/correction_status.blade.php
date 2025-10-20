@@ -6,7 +6,7 @@
     <div class="bg-white p-12 rounded-2xl shadow-2xl max-w-lg w-full text-center z-10">
         <h1 class="text-4xl font-bold text-[#1a1a2e] mb-4" id="main-title">Sedang Memproses Dokumen ⏳</h1>
         <p class="text-xl text-gray-600 mb-8">
-            Dokumen <strong>{{ $document->file_name }}</strong> sedang diperiksa dan dikoreksi oleh Gemini AI.
+            Dokumen <strong>{{ $document->file_name }}</strong> sedang diperiksa dan dikoreksi oleh AI.
         </p>
 
         <div class="flex flex-col items-center">
@@ -25,60 +25,60 @@
         <div id="error-message" class="mt-4 text-red-600 font-bold hidden"></div>
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const checkUrl = '{{ route('correction.check-status', $document->id) }}';
-    const statusMessage = document.getElementById('status-message');
-    const statusDisplay = document.getElementById('status-display');
-    const mainTitle = document.getElementById('main-title');
-    
-    const intervalDuration = 15000; 
-    let pollingIntervalId = null;
+    <script>
+        function redirectToCorrection(url) {
+            window.location.replace(url);
+        }
 
-    function redirectToCorrection(url) {
-        window.location.replace(url);
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkUrl = '{{ route('correction.check-status', $document->id) }}';
+            const statusMessage = document.getElementById('status-message');
+            const statusDisplay = document.getElementById('status-display');
+            const mainTitle = document.getElementById('main-title');
+            
+            const intervalDuration = 15000; 
+            let pollingIntervalId = null;
 
-    function createRedirectButton(url) {
-        return `<button onclick="redirectToCorrection('${url}')"
-                    class="px-8 py-3 bg-[#4a4a6a] text-white rounded-lg font-bold text-xl hover:bg-[#6a7a9a] transition duration-200 shadow-lg">
-                    Lihat Hasil Koreksi
-                </button>`;
-    }
-
-    function checkProcessingStatus() {
-        fetch(checkUrl, { headers: { 'Accept': 'application/json' } })
-        .then(response => response.json())
-        .then(data => {
-            statusMessage.innerText = `Status: ${data.status}...`;
-
-            if (data.done) { 
-                if (pollingIntervalId !== null) {
-                    clearInterval(pollingIntervalId); 
-                    pollingIntervalId = null; 
-                }
-                
-                mainTitle.innerText = "Pemrosesan Selesai! 🎉";
-                statusDisplay.innerHTML = createRedirectButton(data.redirect_url);
-                statusMessage.innerText = "Dokumen siap. Klik tombol di atas untuk melihat perubahannya.";
-
-            } else if (data.status === 'Failed') {
-                if (pollingIntervalId !== null) { clearInterval(pollingIntervalId); }
-                mainTitle.innerText = "Pemrosesan Gagal ❌";
-                statusDisplay.innerHTML = "";
-                statusMessage.innerText = "Terjadi kesalahan. Coba unggah ulang.";
+            function createRedirectButton(url) {
+                return `<button onclick="redirectToCorrection('${url}')"
+                            class="px-8 py-3 bg-[#4a4a6a] text-white rounded-lg font-bold text-xl hover:bg-[#6a7a9a] transition duration-200 shadow-lg">
+                            Lihat Hasil Koreksi
+                        </button>`;
             }
-        })
-        .catch(error => {
-            console.error('Error checking status:', error);
-            statusMessage.innerText = 'Gagal terhubung ke server. Mencoba lagi...';
-        });
-    }
-    
-    checkProcessingStatus(); 
-    pollingIntervalId = setInterval(checkProcessingStatus, intervalDuration);
 
-});
-</script>
+            function checkProcessingStatus() {
+                fetch(checkUrl, { headers: { 'Accept': 'application/json' } })
+                .then(response => response.json())
+                .then(data => {
+                    statusMessage.innerText = `Status: ${data.status}...`;
+
+                    if (data.done) { 
+                        if (pollingIntervalId !== null) {
+                            clearInterval(pollingIntervalId); 
+                            pollingIntervalId = null; 
+                        }
+                        
+                        mainTitle.innerText = "Pemrosesan Selesai! 🎉";
+                        statusDisplay.innerHTML = createRedirectButton(data.redirect_url);
+                        statusMessage.innerText = "Dokumen siap. Klik tombol di atas untuk melihat perubahannya.";
+
+                    } else if (data.status === 'Failed') {
+                        if (pollingIntervalId !== null) { clearInterval(pollingIntervalId); }
+                        mainTitle.innerText = "Pemrosesan Gagal ❌";
+                        statusDisplay.innerHTML = "";
+                        statusMessage.innerText = "Terjadi kesalahan. Coba unggah ulang.";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking status:', error);
+                    statusMessage.innerText = 'Gagal terhubung ke server. Mencoba lagi...';
+                });
+            }
+            
+            checkProcessingStatus(); 
+            pollingIntervalId = setInterval(checkProcessingStatus, intervalDuration);
+
+        });
+    </script>
 </div>
 @endsection
