@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/download/{id}', [DocumentController::class, 'download'])->name('document.download');
     Route::get('/history', [HistoryController::class, 'index'])->name('history');
     Route::delete('/history/delete', [HistoryController::class, 'delete'])->name('history.delete');
+    Route::delete('/history/bulk-delete', [HistoryController::class, 'bulkDelete'])->name('history.bulk-delete');
+    Route::get('/history/bulk-download', [HistoryController::class, 'bulkDownload'])->name('history.bulk-download');
     Route::get('/checker', [TextCheckerController::class, 'index'])->name('rule.checker');
     Route::post('/checker', [TextCheckerController::class, 'check'])->name('rule.check');
     Route::get('/correction/status/{document}', [DocumentController::class, 'showStatus'])->name('correction.status');

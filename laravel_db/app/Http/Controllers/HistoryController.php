@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Document;
 use App\Models\TextEntry;
 use Illuminate\View\View;
@@ -53,9 +54,6 @@ class HistoryController extends Controller
         return view('history', compact('history'));
     }
 
-    /**
-     * Menghapus item (Document atau TextEntry) dari riwayat.
-     */
     public function delete(Request $request)
     {
         $request->validate([
@@ -100,5 +98,95 @@ class HistoryController extends Controller
             \Log::error("Deletion Error: " . $e->getMessage());
             return redirect()->route('history')->with('error', 'Terjadi kesalahan saat menghapus data.');
         }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string',
+        ]);
+
+        $userId = Auth::id();
+        $deletedCount = 0;
+        $errors = [];
+
+        foreach ($request->input('selected_items') as $itemKey) {
+            [$itemType, $itemId] = explode('_', $itemKey);
+
+            try {
+                if ($itemType === 'document') {
+                    $item = Document::where('id', $itemId)->where('user_id', $userId)->firstOrFail();
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($item->file_location);
+                    $item->delete();
+                    $deletedCount++;
+                } elseif ($itemType === 'text') {
+                    $item = TextEntry::where('id', $itemId)->where('user_id', $userId)->firstOrFail();
+                    $item->delete();
+                    $deletedCount++;
+                }
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                $errors[] = "Item {$itemType} ID {$itemId} tidak ditemukan atau tidak memiliki izin.";
+            } catch (\Exception $e) {
+                \Log::error("Bulk Deletion Error for {$itemKey}: " . $e->getMessage());
+                $errors[] = "Kesalahan saat menghapus item {$itemType} ID {$itemId}.";
+            }
+        }
+
+        $message = "{$deletedCount} item berhasil dihapus.";
+        if (!empty($errors)) {
+            $message .= " Namun, terjadi kesalahan pada beberapa item.";
+        }
+
+        return redirect()->route('history')->with('success', $message);
+    }
+
+    public function bulkDownload(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string', 
+        ]);
+
+        $userId = Auth::id();
+        $zipFileName = 'takatakata_bulk_download_' . time() . '.zip';
+        $tempPath = storage_path('app/public/' . $zipFileName);
+        
+        $zip = new \ZipArchive();
+
+        if ($zip->open($tempPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+            return redirect()->route('history')->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        $downloadedCount = 0;
+        
+        foreach ($request->input('selected_items') as $itemKey) {
+            [$itemType, $itemId] = explode('_', $itemKey);
+
+            if ($itemType === 'document') {
+                $document = Document::where('id', $itemId)
+                                    ->where('user_id', $userId)
+                                    ->where('upload_status', 'Completed')
+                                    ->first();
+
+                if ($document) {
+                    $filePath = Storage::disk('public')->path($document->file_location);
+                    $fileName = $document->file_name . '_' . $document->id . '.pdf';
+
+                    if (file_exists($filePath)) {
+                        $zip->addFile($filePath, $fileName);
+                        $downloadedCount++;
+                    }
+                }
+            }
+        }
+
+        $zip->close();
+
+        if ($downloadedCount === 0) {
+            return redirect()->route('history')->with('error', 'Tidak ada dokumen yang valid atau selesai untuk diunduh.');
+        }
+
+        return response()->download($tempPath, $zipFileName)->deleteFileAfterSend(true);
     }
 }
