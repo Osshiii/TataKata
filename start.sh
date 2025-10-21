@@ -21,5 +21,6 @@ php artisan storage:link || true
 php artisan config:clear || true
 php artisan cache:clear || true
 
-echo "🚀 Starting Laravel..."
-php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+echo "Port yang digunakan: ${PORT}"
+php artisan serve --host=0.0.0.0 --port=$PORT
+
