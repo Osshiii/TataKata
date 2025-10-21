@@ -13,8 +13,15 @@ COPY . .
 # Masuk ke folder Laravel dan install dependencies
 RUN cd laravel_db && composer install --no-scripts --no-interaction --optimize-autoloader
 
+# Inisialisasi Environment (Ganti dengan cara Anda memproses file .env jika berbeda)
+RUN cp laravel_db/.env.example laravel_db/.env
+RUN php laravel_db/artisan key:generate
+
+# Set permissions
+RUN chmod -R 777 laravel_db/storage laravel_db/bootstrap/cache
+
 # Expose port dinamis
 EXPOSE ${PORT}
 
 # Jalankan Laravel
-CMD php artisan serve
+CMD php laravel_db/artisan serve --host=0.0.0.0 --port=${PORT}
