@@ -17,7 +17,6 @@ if [ ! -f .env ]; then
 fi
 
 php artisan key:generate --force || true
-php artisan migrate --force || true
 php artisan storage:link || true
 php artisan config:clear || true
 php artisan cache:clear || true
