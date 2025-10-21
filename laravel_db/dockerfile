@@ -1,18 +1,26 @@
+# Gunakan PHP 8.3
 FROM php:8.3-fpm
 
-# Install system dependencies and Node.js
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    zip unzip git curl libpq-dev libxml2-dev libonig-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy everything into container
+# Copy project files
 COPY . .
 
-# Expose Laravel default port
-EXPOSE 8000
+# Install dependencies
+RUN composer install --no-scripts --no-interaction --optimize-autoloader
 
-# Start Laravel server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Generate Laravel key
+RUN php artisan key:generate || true
+
+# Expose port 8000 and start Laravel
+EXPOSE 8000
+CMD php artisan serve --host=0.0.0.0 --port=8000
