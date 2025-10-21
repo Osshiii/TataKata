@@ -1,27 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
+# Masuk ke folder Laravel kamu
 cd laravel_db
 
-# Set environment overrides (optional, bisa juga langsung di .env.example)
-export CACHE_STORE=file
-export SESSION_DRIVER=file
-export QUEUE_CONNECTION=sync
-
-# Install backend & frontend dependencies
-composer install
+echo "📦 Install dependencies..."
+composer install --optimize-autoloader --no-dev --no-interaction
 npm install
 npm run build
 
-# Setup SQLite (untuk cache/session jika pakai database)
+echo "🗃️ Setup database dan environment..."
 mkdir -p database
 touch database/database.sqlite
 
-# Setup Laravel
-cp -n .env.example .env || true
-php artisan key:generate
-php artisan migrate --force
-php artisan storage:link
+# Pastikan file .env ada
+if [ ! -f .env ]; then
+  cp .env.example .env
+fi
 
-# Serve Laravel di port Railway
-php -S 0.0.0.0:${PORT} -t public
+# Generate APP_KEY kalau belum ada
+php artisan key:generate --force || true
+
+# Jalankan migrasi database
+php artisan migrate --force || true
+
+# Buat symbolic link storage
+php artisan storage:link || true
+
+# Bersihkan cache & config
+php artisan config:clear || true
+php artisan cache:clear || true
+
+# Jalankan Laravel di port Railway
+echo "🚀 Menjalankan server Laravel di port ${PORT}"
+php artisan serve --host=0.0.0.0 --port=${PORT}

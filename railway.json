@@ -1,0 +1,8 @@
+{
+  "build": {
+    "buildCommand": "cd laravel_db && composer install --no-dev --optimize-autoloader && npm install && npm run build"
+  },
+  "start": {
+    "startCommand": "bash start.sh"
+  }
+}
