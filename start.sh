@@ -4,6 +4,7 @@ set -e
 cd laravel_db
 
 composer install
+php artisan cache:clear
 
 cp -n .env.example .env || true
 php artisan key:generate
