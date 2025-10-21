@@ -4,7 +4,12 @@ set -e
 cd laravel_db
 
 composer install
+
+mkdir -p database
+touch database/database.sqlite
+
 php artisan cache:clear
+php artisan config:clear
 
 cp -n .env.example .env || true
 php artisan key:generate
