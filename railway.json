@@ -1,6 +1,0 @@
-{
-  "build": {
-    "buildCommand": "cd laravel_db && composer install && npm install && npm run build",
-    "startCommand": "cd laravel_db && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
-  }
-}
