@@ -18,5 +18,5 @@ php artisan key:generate
 php artisan migrate --force
 php artisan storage:link
 
-# Serve Laravel di port Railway (gunakan PHP built-in server)
+# Serve Laravel (backend + Blade/Vite frontend)
 php -S 0.0.0.0:${PORT} -t public
