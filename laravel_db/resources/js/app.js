@@ -1,5 +1,5 @@
 import './bootstrap';
-import { checkHybrid, predictAI, predictMask, uploadPDF, getReference } from './api';
+import { checkHybrid, predictAI, uploadPDF, getReference } from './api';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
