@@ -21,7 +21,7 @@ Website ini dirancang agar mudah digunakan. Mahasiswa cukup mendaftar dan login 
 1. Jalankan command ```cd laravel_db``` untuk mengakses repositori ```Laravel```.
 2. Jalankan instalasi ```composer install``` untuk backend dan ```npm install``` ```npm run build``` untuk frontend.
 3. Jalankan command ```npm run dev``` untuk compile aset frontend ke ```Laravel```.
-4. Copy konfigurasi ```.env``` dengan command ```cp -n .env.example .env```.
+4. Copy konfigurasi ```.env``` dengan command ```cp -n .env.example .env``` untuk Linux/macOS dan ```Copy-Item .env.example .env``` untuk Windows.
 5. Jalankan command ```php artisan key:generate``` untuk enkripsi data.
 6. Jalankan command ```php artisan migrate:fresh --seed``` untuk ekspor database ```mysql``` ke sistem backend.
 7. Jalankan command ```php artisan storage:link``` untuk menyimpan dokumen.
